@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { finalEnvironment } from '../../../environments/final.environment';
+import { finalEnvironment } from '../../../../environments/final.environment';
 import { keyBy } from 'lodash';
 
 @Injectable({
