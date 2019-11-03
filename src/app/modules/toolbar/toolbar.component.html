@@ -7,17 +7,14 @@
   <div class="collapse navbar-collapse" id="navbarSupportedContent">
     <ul class="navbar-nav mr-auto">
       <li class="nav-item active">
-        <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="#">Link</a>
+        <a class="nav-link" routerLink="home">Home <span class="sr-only">(current)</span></a>
       </li>
       <li ngbDropdown class="nav-item active">
         <a class="nav-link" id="dropdownBasic1" ngbDropdownToggle>Select view...</a>
         <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
-          <a ngbDropdownItem class="nav-link">Selected cow mode</a>
-          <a ngbDropdownItem class="nav-link">Cowshed area view</a>
-          <a ngbDropdownItem class="nav-link">Cowshed workpoints view</a>
+          <a ngbDropdownItem class="nav-link" routerLink="selected-cow-chart">Selected cow mode</a>
+          <a ngbDropdownItem class="nav-link" routerLink="stricted-area-chart">Cowshed area view</a>
+          <a ngbDropdownItem class="nav-link" routerLink="workpoints-area">Cowshed workpoints view</a>
         </div>
       </li>
       <li class="nav-item">
