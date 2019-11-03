@@ -1,3 +1,5 @@
 <div class="content">
   <img src="assets/img/areas_example.png">
+  WYBRANA DATA: {{ selectedDate }}
 </div>
+<cows-time-selector (timeEventEmitter)="updateSelectedDate($event)"></cows-time-selector>

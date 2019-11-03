@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { SelectedCowChartComponent } from './selected-cow-chart/selected-cow-chart.component';
 import { StrictedAreaChartComponent } from './stricted-area-chart/stricted-area-chart.component';
 import { WorkPointsChartComponent } from './work-points-chart/work-points-chart.component';
+import { ModulesModule } from '../modules.module';
 
 
 
@@ -12,7 +13,8 @@ import { WorkPointsChartComponent } from './work-points-chart/work-points-chart.
     StrictedAreaChartComponent
   ],
   imports: [
-    CommonModule
+    CommonModule,
+    ModulesModule
   ]
 })
 export class ChartsModule { }

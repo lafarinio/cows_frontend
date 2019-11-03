@@ -7,12 +7,12 @@ import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 export class TimeSelectorComponent implements OnInit {
 
   @Output()
-  timeEventEmitter: EventEmitter<Date>;
+  timeEventEmitter = new EventEmitter<Date>();
 
   constructor() { }
 
   ngOnInit() {
-    this.timeEventEmitter = new EventEmitter<Date>();
+    // this.timeEventEmitter = new EventEmitter<Date>();
   }
 
   emitTime(time: Date) {

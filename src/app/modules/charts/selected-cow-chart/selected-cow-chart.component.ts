@@ -6,9 +6,15 @@ import { Component, OnInit } from '@angular/core';
 })
 export class SelectedCowChartComponent implements OnInit {
 
+  selectedDate: Date;
   constructor() { }
 
   ngOnInit() {
+    this.selectedDate = new Date();
   }
 
+
+  updateSelectedDate($event: Date) {
+    this.selectedDate = $event;
+  }
 }
