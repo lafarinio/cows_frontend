@@ -1,3 +1,15 @@
 <div class="content">
-  <button type="button" class="btn btn-primary" (click)="emitTime(testTimeGenerator())">SEND TIME!</button>
+  <div class="sliders">
+    <h2 class="timeLabel">{{selectedTime}}</h2>
+    <div class="slidersContainer">
+      <input #minuteSlider type="range" min="0" max="59" value="30" class="slider" id="minuteSlider" (input)='onSliderChange()' (mouseup)='onSliderChangeEnd()'>
+      <input #minuteButton type="button" (click)='timelapseButtonPressed("minutes")' value="Timelapse" />
+    </div>
+    <div>
+      <input #hoursSlider type="range" min="0" max="23" value="12" class="slider" id="hourSlider" (input)='onSliderChange()' (mouseup)='onSliderChangeEnd()'>
+    </div>
+    <div>
+      <!-- day selection -->
+    </div>
+  </div>
 </div>

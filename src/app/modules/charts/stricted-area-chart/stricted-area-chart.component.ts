@@ -8,8 +8,8 @@ let data = []
 
 function generateTestData() {
   // time - year, month, day, hour, minute
-  let time = new Date(Date.UTC(2019, 10, 11, 8, 10));
-  const endTime = new Date(Date.UTC(2019, 10, 11, 10, 10));
+  let time = new Date(Date.UTC(2019, 10, 11, 0, 0));
+  const endTime = new Date(Date.UTC(2019, 10, 11, 23, 59));
   for (time; time <= endTime; time.setTime(time.getTime() + (1 * 60 * 1000)/*in ms*/)) {
       for(let cowIter = 0; cowIter < 8; cowIter++) {
           const whichColumn = Math.floor((Math.random() * 10) + 1);
@@ -123,16 +123,6 @@ export class StrictedAreaChartComponent {
       });
 
       generateTestData();
-      // three sliders might be needed - date, hour, minute to be usable
-      const slider = chart.bottomAxesContainer.createChild(am4core.Slider);
-      slider.start = 0.0;
-      slider.valign = 'bottom';
-      slider.events.on('rangechanged', function () {
-          console.log('Slider at pos:' + slider.start);
-          const minuteOffset = Math.floor(slider.start * 10);
-          const timeToDisplay = new Date(Date.UTC(2019, 10, 11, 8, 10 + minuteOffset));
-          chart.data = parseData(timeToDisplay, 10, true);
-      })
 
       const sensors = [
           {
@@ -167,6 +157,12 @@ export class StrictedAreaChartComponent {
 
       this.chart = chart;
     });
+  }
+
+  onTimeSelection(time: Date) {
+    console.log(time);
+
+    this.chart.data = parseData(time, 10, true);
   }
 
   ngOnDestroy() {
