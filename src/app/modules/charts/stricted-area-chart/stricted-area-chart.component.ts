@@ -3,7 +3,9 @@ import { Component, OnInit, NgZone, OnDestroy } from '@angular/core';
 import * as am4core from '@amcharts/amcharts4/core';
 import * as am4charts from '@amcharts/amcharts4/charts';
 import am4themes_material from '@amcharts/amcharts4/themes/material';
-import {CowPosition, CowShedSide} from '../../../base/models/cow-position.model';
+import { CowPosition } from '../../../base/models/cow-position.model';
+import { CowShedSide, PositionNames } from '../../../base/models/position.model';
+import { AreaPosition } from '../../../base/models/area-position.model';
 
 const data: Array<CowPosition> = [];
 
@@ -25,36 +27,29 @@ function generateTestData() {
   }
 }
 
-function parseData(whatTime, barnSize, isBarnSplit) {
-  /* Master format :
-  {
-      "xpos": "1",
-      "ypos": "A",
-      "value": 5
-  },
-  */
-  const filteredData = [];
+function parseData(whatTime, barnSize, isBarnSplit): Array<AreaPosition> {
+  const filteredData: Array<AreaPosition> = [];
 
   for (let i = 1; i <= barnSize; i++) {
       filteredData.push({
-          xpos: i,
-          ypos: 'A',
-          value: 0
+        posX: i,
+        posY: CowShedSide.A,
+        value: 0
       });
   }
   if (isBarnSplit === true) {
       for (let i = 1; i <= barnSize; i++) {
           filteredData.push({
-              xpos: i,
-              ypos: 'B',
-              value: 0
+            posX: i,
+            posY: CowShedSide.B,
+            value: 0
           });
       }
   }
 
   const dataTimeRange = data.filter((value: CowPosition) => value.time >= whatTime);
   for (const selectedData of dataTimeRange) {
-      const idx = (selectedData.posX - 1) + (selectedData.posY === 'B' ? barnSize : 0);
+      const idx = (selectedData.posX - 1) + (selectedData.posY === CowShedSide.B ? barnSize : 0);
       filteredData[idx].value += 1;
   }
   return filteredData;
@@ -77,8 +72,8 @@ export class StrictedAreaChartComponent implements OnInit, OnDestroy {
       const xAxis = chart.xAxes.push(new am4charts.CategoryAxis());
       const yAxis = chart.yAxes.push(new am4charts.CategoryAxis());
 
-      xAxis.dataFields.category = 'xpos';
-      yAxis.dataFields.category = 'ypos';
+      xAxis.dataFields.category = PositionNames.posX;
+      yAxis.dataFields.category = PositionNames.posY;
 
       xAxis.renderer.grid.template.disabled = true;
       xAxis.renderer.minGridDistance = 40;
@@ -88,9 +83,9 @@ export class StrictedAreaChartComponent implements OnInit, OnDestroy {
       yAxis.renderer.minGridDistance = 30;
 
       const series = chart.series.push(new am4charts.ColumnSeries());
-      series.dataFields.categoryX = 'xpos';
-      series.dataFields.categoryY = 'ypos';
-      series.dataFields.value = 'value';
+      series.dataFields.categoryX = PositionNames.posX;
+      series.dataFields.categoryY = PositionNames.posY;
+      series.dataFields.value = PositionNames.value;
       series.sequencedInterpolation = true;
       series.defaultState.transitionDuration = 3000;
 
@@ -100,7 +95,7 @@ export class StrictedAreaChartComponent implements OnInit, OnDestroy {
       columnTemplate.strokeWidth = 1;
       columnTemplate.strokeOpacity = 0.2;
       columnTemplate.stroke = bgColor;
-      columnTemplate.tooltipText = '{ypos}{xpos} : {value.workingValue.formatNumber("#.")} cows';
+      columnTemplate.tooltipText = `{${PositionNames.posY}}{${PositionNames.posX}} : {value.workingValue.formatNumber("#.")} cows`;
       columnTemplate.width = am4core.percent(100);
       columnTemplate.height = am4core.percent(100);
 

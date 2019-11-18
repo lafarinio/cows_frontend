@@ -1,12 +1,9 @@
-import { serialize, deserialize, serializeAs, deserializeAs } from 'cerialize';
+import { serialize, deserialize, serializeAs, deserializeAs, inheritSerialization } from 'cerialize';
 import { dateSerializer } from '../serializers/date-serializer';
+import { Position } from './position.model';
 
-export enum CowShedSide {
-  A = 'A',
-  B = 'B'
-}
-
-export class CowPosition {
+@inheritSerialization(Position)
+export class CowPosition extends Position {
   @serialize
   @deserialize
   id: string;
@@ -14,12 +11,4 @@ export class CowPosition {
   @serializeAs(dateSerializer)
   @deserializeAs(dateSerializer)
   time: Date;
-
-  @serialize
-  @deserialize
-  posX: number;
-
-  @serializeAs(CowShedSide)
-  @deserializeAs(CowShedSide)
-  posY: CowShedSide;
 }
