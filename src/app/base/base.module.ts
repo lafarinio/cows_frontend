@@ -1,6 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { UrlService } from './services/url-composer/url.service';
+import { UrlService } from './services/url.service';
 
 @NgModule({
   declarations: [],
