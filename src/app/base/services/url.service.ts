@@ -1,9 +1,8 @@
 import { Injectable } from '@angular/core';
 import { finalEnvironment } from '../../../environments/final.environment';
-import { keyBy } from 'lodash';
 import { exists } from '../operators/exists';
 import { Dictionary } from '../../shared/models/dictionary.model';
-import { dictionarySerializer } from "../../shared/serializers/dictionary.serializer";
+import { dictionarySerializer } from '../../shared/serializers/dictionary.serializer';
 
 @Injectable({
   providedIn: 'root'
@@ -22,7 +21,6 @@ export class UrlService {
   }
 
   injectPathParameters(path: string, parameters: Dictionary<any>): string {
-
     return Object.getOwnPropertyNames(parameters)
       .reduce((previousPath, parameterName) => this.replaceAll(previousPath, parameterName, parameters[parameterName]), path);
   }
@@ -33,9 +31,8 @@ export class UrlService {
 
   private getSuffix(path: string, params?: Dictionary<any>) {
     const suffix = this.getUrlPath(path);
-    const urlParams = params && keyBy(params);
-    if (exists(urlParams)) {
-      return this.injectPathParameters(suffix, urlParams);
+    if (exists(params)) {
+      return this.injectPathParameters(suffix, params);
     }
     return suffix;
   }
@@ -47,6 +44,7 @@ export class UrlService {
   }
 
   private replaceAll(input: string, toReplace: string, replacement: string): string {
+    console.log(input, toReplace, replacement);
     return input.split(`:${toReplace}`).join(replacement);  // funkcjonalne replaceAll
   }
 }

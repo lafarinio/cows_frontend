@@ -5,6 +5,7 @@ import * as am4charts from '@amcharts/amcharts4/charts';
 import am4themes_material from '@amcharts/amcharts4/themes/material';
 import { PositionNames } from '../../models/position.model';
 import { WorkpointAreaPosition } from '../../models/workpoint-area-position.model';
+import { UrlService } from '../../../../base/services/url.service';
 
 @Component({
   selector: 'cows-work-points-chart',
@@ -13,9 +14,14 @@ import { WorkpointAreaPosition } from '../../models/workpoint-area-position.mode
 export class WorkPointsChartComponent implements OnInit, OnDestroy {
   private chart: am4charts.XYChart;
 
-  constructor(private zone: NgZone) {}
+  constructor(private zone: NgZone,
+              private urlService: UrlService) {}
 
   ngOnInit() {
+    // const example = this.urlService.getUrl('cow', {id: '123'});
+    // console.log(example);
+    // const example2 = this.urlService.getUrl('cowLists');
+    // console.log(example2);
     this.zone.runOutsideAngular(() => {
       // Create chart instance
       const chart = am4core.create('chartdiv', am4charts.XYChart);
