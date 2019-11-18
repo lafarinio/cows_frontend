@@ -1,22 +1,23 @@
-import { Component, OnInit, NgZone } from '@angular/core';
+import { Component, OnInit, NgZone, OnDestroy } from '@angular/core';
 
-import * as am4core from "@amcharts/amcharts4/core";
-import * as am4charts from "@amcharts/amcharts4/charts";
-import am4themes_material from "@amcharts/amcharts4/themes/material";
+import * as am4core from '@amcharts/amcharts4/core';
+import * as am4charts from '@amcharts/amcharts4/charts';
+import am4themes_material from '@amcharts/amcharts4/themes/material';
+import {CowPosition, CowShedSide} from '../../../base/models/cow-position.model';
 
-let data = []
+const data: Array<CowPosition> = [];
 
 function generateTestData() {
   // time - year, month, day, hour, minute
-  let time = new Date(Date.UTC(2019, 10, 11, 0, 0));
+  const time = new Date(Date.UTC(2019, 10, 11, 0, 0));
   const endTime = new Date(Date.UTC(2019, 10, 11, 23, 59));
   for (time; time <= endTime; time.setTime(time.getTime() + (1 * 60 * 1000)/*in ms*/)) {
-      for(let cowIter = 0; cowIter < 8; cowIter++) {
+      for (let cowIter = 0; cowIter < 8; cowIter++) {
           const whichColumn = Math.floor((Math.random() * 10) + 1);
-          const whichSide = cowIter % 2 === 0 ? 'A' : 'B';
+          const whichSide = cowIter % 2 === 0 ? CowShedSide.A : CowShedSide.B;
           data.push({
-              time: time.toString(),
-              cow_id: cowIter,
+              time: new Date(time),
+              id: cowIter.toString(),
               posX: whichColumn,
               posY: whichSide
           });
@@ -32,10 +33,9 @@ function parseData(whatTime, barnSize, isBarnSplit) {
       "value": 5
   },
   */
-  let filteredData = []
+  const filteredData = [];
 
-  for (let i = 1; i <= barnSize; i++)
-  {
+  for (let i = 1; i <= barnSize; i++) {
       filteredData.push({
           xpos: i,
           ypos: 'A',
@@ -52,21 +52,10 @@ function parseData(whatTime, barnSize, isBarnSplit) {
       }
   }
 
-  let foundTimeRangeStart = false;
-  for (let i = 0; i < data.length; i++) {
-    if (data[i].time == whatTime && foundTimeRangeStart === false) {
-        foundTimeRangeStart = true;
-    }
-
-    if (data[i].time != whatTime && foundTimeRangeStart === true) {
-        break;
-    }
-
-    if (foundTimeRangeStart === true) {
-      const idx = (data[i].posX - 1) + (data[i].posY === 'B' ? barnSize : 0);
-
+  const dataTimeRange = data.filter((value: CowPosition) => value.time >= whatTime);
+  for (const selectedData of dataTimeRange) {
+      const idx = (selectedData.posX - 1) + (selectedData.posY === 'B' ? barnSize : 0);
       filteredData[idx].value += 1;
-    }
   }
   return filteredData;
 }
@@ -75,14 +64,14 @@ function parseData(whatTime, barnSize, isBarnSplit) {
   selector: 'cows-stricted-area-chart',
   templateUrl: './stricted-area-chart.component.html'
 })
-export class StrictedAreaChartComponent {
+export class StrictedAreaChartComponent implements OnInit, OnDestroy {
   private chart: am4charts.XYChart;
 
   constructor(private zone: NgZone) {}
 
-  ngAfterViewInit() {
+  ngOnInit() {
     this.zone.runOutsideAngular(() => {
-      const chart = am4core.create("chartdiv", am4charts.XYChart);
+      const chart = am4core.create('chartdiv', am4charts.XYChart);
       chart.maskBullets = false;
 
       const xAxis = chart.xAxes.push(new am4charts.CategoryAxis());
@@ -137,9 +126,9 @@ export class StrictedAreaChartComponent {
               sensorX: 300,
               sensorY: 0
           }
-      ]
+      ];
 
-      for (let pos of sensors) {
+      for (const pos of sensors) {
         const sensor = new am4core.Image();
         sensor.href = 'assets/img/sensor_icon.svg';
 
