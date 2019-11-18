@@ -1,11 +1,12 @@
 import { serialize, deserialize, serializeAs, deserializeAs } from 'cerialize';
+import { AbstractPosition } from './abstract-position.model';
 
 export enum CowShedSide {
   A = 'A',
   B = 'B'
 }
 
-export class Position {
+export class Position implements AbstractPosition {
 
   @serialize
   @deserialize

@@ -5,7 +5,7 @@ import * as am4charts from '@amcharts/amcharts4/charts';
 import am4themes_material from '@amcharts/amcharts4/themes/material';
 import { CowPosition } from '../../../base/models/cow-position.model';
 import { CowShedSide, PositionNames } from '../../../base/models/position.model';
-import { AreaPosition } from '../../../base/models/area-position.model';
+import { StrictedAreaPosition } from '../../../base/models/srticted-area-position.model';
 
 const data: Array<CowPosition> = [];
 
@@ -27,8 +27,8 @@ function generateTestData() {
   }
 }
 
-function parseData(whatTime, barnSize, isBarnSplit): Array<AreaPosition> {
-  const filteredData: Array<AreaPosition> = [];
+function parseData(whatTime, barnSize, isBarnSplit): Array<StrictedAreaPosition> {
+  const filteredData: Array<StrictedAreaPosition> = [];
 
   for (let i = 1; i <= barnSize; i++) {
       filteredData.push({
