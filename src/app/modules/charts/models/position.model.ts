@@ -1,5 +1,5 @@
 import { serialize, deserialize, serializeAs, deserializeAs } from 'cerialize';
-import { AbstractPosition } from './abstract-position.model';
+import { AbstractPosition } from '../../../base/models/abstract-position.model';
 
 export enum CowShedSide {
   A = 'A',

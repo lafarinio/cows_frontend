@@ -3,11 +3,11 @@ import { Component, OnInit, NgZone, OnDestroy } from '@angular/core';
 import * as am4core from '@amcharts/amcharts4/core';
 import * as am4charts from '@amcharts/amcharts4/charts';
 import am4themes_material from '@amcharts/amcharts4/themes/material';
-import { CowPosition } from '../../../base/models/cow-position.model';
-import { CowShedSide, PositionNames } from '../../../base/models/position.model';
-import { StrictedAreaPosition } from '../../../base/models/srticted-area-position.model';
+import { StrictedCowPosition } from '../../models/stricted-cow-position.model';
+import { CowShedSide, PositionNames } from '../../models/position.model';
+import { StrictedAreaPosition } from '../../models/srticted-area-position.model';
 
-const data: Array<CowPosition> = [];
+const data: Array<StrictedCowPosition> = [];
 
 function generateTestData() {
   // time - year, month, day, hour, minute
@@ -47,7 +47,7 @@ function parseData(whatTime, barnSize, isBarnSplit): Array<StrictedAreaPosition>
       }
   }
 
-  const dataTimeRange = data.filter((value: CowPosition) => value.time >= whatTime);
+  const dataTimeRange = data.filter((value: StrictedCowPosition) => value.time >= whatTime);
   for (const selectedData of dataTimeRange) {
       const idx = (selectedData.posX - 1) + (selectedData.posY === CowShedSide.B ? barnSize : 0);
       filteredData[idx].value += 1;

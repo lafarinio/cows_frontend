@@ -3,9 +3,8 @@ import { Component, OnInit, NgZone, OnDestroy } from '@angular/core';
 import * as am4core from '@amcharts/amcharts4/core';
 import * as am4charts from '@amcharts/amcharts4/charts';
 import am4themes_material from '@amcharts/amcharts4/themes/material';
-import {PositionNames} from "../../../base/models/position.model";
-import {StrictedAreaPosition} from "../../../base/models/srticted-area-position.model";
-import {WorkpointAreaPosition} from "../models/workpoint-area-position.model";
+import { PositionNames } from '../../models/position.model';
+import { WorkpointAreaPosition } from '../../models/workpoint-area-position.model';
 
 @Component({
   selector: 'cows-work-points-chart',

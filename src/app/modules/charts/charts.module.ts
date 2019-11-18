@@ -1,8 +1,8 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { SelectedCowChartComponent } from './selected-cow-chart/selected-cow-chart.component';
-import { StrictedAreaChartComponent } from './stricted-area-chart/stricted-area-chart.component';
-import { WorkPointsChartComponent } from './work-points-chart/work-points-chart.component';
+import { SelectedCowChartComponent } from './components/selected-cow-chart/selected-cow-chart.component';
+import { StrictedAreaChartComponent } from './components/stricted-area-chart/stricted-area-chart.component';
+import { WorkPointsChartComponent } from './components/work-points-chart/work-points-chart.component';
 import { ModulesModule } from '../modules.module';
 
 
