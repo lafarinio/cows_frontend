@@ -55,6 +55,61 @@ function parseData(whatTime: Date, barnSize, isBarnSplit): Array<StrictedAreaPos
   return filteredData;
 }
 
+function barnCoordToChartCoord(bHeight: number, bWidth: number, cHeight: number, cWidth: number, bX: number, bY: number) {
+  // assumes barn coords go from (0,0) in the top left, (maxX, maxY) bottom right
+  const cX = cWidth - cWidth * (bX / bWidth);
+  const cY = cHeight * (bY / bHeight);
+  
+  return [cX, cY];
+}
+
+function drawSensors(chart: am4charts.XYChart) {
+  // data needs to already exist
+  const contentHeight = chart.plotContainer.contentHeight;
+  const contentWidth = chart.plotContainer.contentWidth;
+
+  if(contentHeight == null) {
+    console.log("Error - chart still not fully loaded! Can't draw sensors.");
+  }
+
+  const barnHeight = 100; // should come from db
+  const barnWidth = 200; // should come from db
+
+  const sensors = [ // in barn coords, should come from db
+    {
+      sensorX: 100,
+      sensorY: 0
+    },
+    {
+      sensorX: 200,
+      sensorY: 50
+    },
+    {
+      sensorX: 100,
+      sensorY: 100
+    },
+    {
+      sensorX: 0,
+      sensorY: 50
+    }
+  ];
+
+  for (const pos of sensors) {
+    const sensor = new am4core.Image();
+    sensor.href = 'assets/img/sensor_icon.svg';
+    sensor.valign = 'top';
+    sensor.align = 'right';
+
+    const coords = barnCoordToChartCoord(barnHeight, barnWidth, contentHeight, contentWidth, pos.sensorX, pos.sensorY);
+    sensor.marginRight = coords[0] - (sensor.innerWidth / 4);
+    sensor.marginTop = coords[1] - (sensor.innerHeight / 4);
+
+    sensor.zIndex = 100;
+    chart.tooltipContainer.children.push(sensor);
+    sensor.appear();
+  }
+}
+
 @Component({
   selector: 'cows-stricted-area-chart',
   templateUrl: './stricted-area-chart.component.html'
@@ -75,10 +130,10 @@ export class StrictedAreaChartComponent implements OnInit, OnDestroy {
       xAxis.dataFields.category = PositionNames.posX;
       yAxis.dataFields.category = PositionNames.posY;
 
-      xAxis.renderer.grid.template.disabled = true;
+      xAxis.renderer.grid.template.disabled = false;
       xAxis.renderer.minGridDistance = 40;
 
-      yAxis.renderer.grid.template.disabled = true;
+      yAxis.renderer.grid.template.disabled = false;
       yAxis.renderer.inversed = true;
       yAxis.renderer.minGridDistance = 30;
 
@@ -108,37 +163,6 @@ export class StrictedAreaChartComponent implements OnInit, OnDestroy {
 
       generateTestData();
 
-      const sensors = [
-          {
-              sensorX: 0,
-              sensorY: 0
-          },
-          {
-              sensorX: 0,
-              sensorY: 300
-          },
-          {
-              sensorX: 300,
-              sensorY: 0
-          }
-      ];
-
-      for (const pos of sensors) {
-        const sensor = new am4core.Image();
-        sensor.href = 'assets/img/sensor_icon.svg';
-
-        sensor.valign = 'top';
-        sensor.align = 'right';
-
-        sensor.marginTop = pos.sensorY;
-        sensor.marginRight = pos.sensorX;
-
-        sensor.zIndex = 100;
-
-        chart.tooltipContainer.children.push(sensor);
-        sensor.appear();
-      }
-
       this.chart = chart;
     });
   }
@@ -147,6 +171,7 @@ export class StrictedAreaChartComponent implements OnInit, OnDestroy {
     console.log(time);
 
     this.chart.data = parseData(time, 10, true);
+    drawSensors(this.chart);
   }
 
   ngOnDestroy() {
