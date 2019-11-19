@@ -27,7 +27,7 @@ function generateTestData() {
   }
 }
 
-function parseData(whatTime, barnSize, isBarnSplit): Array<StrictedAreaPosition> {
+function parseData(whatTime: Date, barnSize, isBarnSplit): Array<StrictedAreaPosition> {
   const filteredData: Array<StrictedAreaPosition> = [];
 
   for (let i = 1; i <= barnSize; i++) {
@@ -47,7 +47,7 @@ function parseData(whatTime, barnSize, isBarnSplit): Array<StrictedAreaPosition>
       }
   }
 
-  const dataTimeRange = data.filter((value: StrictedCowPosition) => value.time >= whatTime);
+  const dataTimeRange = data.filter((value: StrictedCowPosition) => value.time.getTime() === whatTime.getTime());
   for (const selectedData of dataTimeRange) {
       const idx = (selectedData.posX - 1) + (selectedData.posY === CowShedSide.B ? barnSize : 0);
       filteredData[idx].value += 1;
