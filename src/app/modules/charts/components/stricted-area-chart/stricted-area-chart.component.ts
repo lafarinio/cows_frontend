@@ -6,26 +6,11 @@ import am4themes_material from '@amcharts/amcharts4/themes/material';
 import { StrictedCowPosition } from '../../models/stricted-cow-position.model';
 import { CowShedSide, PositionNames } from '../../models/position.model';
 import { StrictedAreaPosition } from '../../models/srticted-area-position.model';
+import { StrictedPositionGenerator } from '../../services/stricted-position.generator';
+import { TimeRange, TimeSteps } from '../../../../base/models/time-range.model';
+import { Deserialize } from 'cerialize';
 
-const data: Array<StrictedCowPosition> = [];
-
-function generateTestData() {
-  // time - year, month, day, hour, minute
-  const time = new Date(Date.UTC(2019, 10, 11, 0, 0));
-  const endTime = new Date(Date.UTC(2019, 10, 11, 23, 59));
-  for (time; time <= endTime; time.setTime(time.getTime() + (1 * 60 * 1000)/*in ms*/)) {
-      for (let cowIter = 0; cowIter < 8; cowIter++) {
-          const whichColumn = Math.floor((Math.random() * 10) + 1);
-          const whichSide = cowIter % 2 === 0 ? CowShedSide.A : CowShedSide.B;
-          data.push({
-              time: new Date(time),
-              id: cowIter.toString(),
-              posX: whichColumn,
-              posY: whichSide
-          });
-      }
-  }
-}
+let data: Array<StrictedCowPosition> = [];
 
 function parseData(whatTime: Date, barnSize, isBarnSplit): Array<StrictedAreaPosition> {
   const filteredData: Array<StrictedAreaPosition> = [];
@@ -59,7 +44,7 @@ function barnCoordToChartCoord(bHeight: number, bWidth: number, cHeight: number,
   // assumes barn coords go from (0,0) in the top left, (maxX, maxY) bottom right
   const cX = cWidth - cWidth * (bX / bWidth);
   const cY = cHeight * (bY / bHeight);
-  
+
   return [cX, cY];
 }
 
@@ -68,8 +53,8 @@ function drawSensors(chart: am4charts.XYChart) {
   const contentHeight = chart.plotContainer.contentHeight;
   const contentWidth = chart.plotContainer.contentWidth;
 
-  if(contentHeight == null) {
-    console.log("Error - chart still not fully loaded! Can't draw sensors.");
+  if (contentHeight == null) {
+    console.log('Error - chart still not fully loaded! Can\'t draw sensors.');
   }
 
   const barnHeight = 100; // should come from db
@@ -121,6 +106,16 @@ export class StrictedAreaChartComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.zone.runOutsideAngular(() => {
+      const sectionsAmount = 10;
+      const cowAmount = 30;
+      const timeRange: TimeRange = Deserialize({
+        startDate: new Date(2019, 10, 11),
+        endDate: new Date(2019, 10, 12),
+        timeStep: TimeSteps.ONE_MINUTE
+      }, TimeRange);
+      const generator = new StrictedPositionGenerator(timeRange, sectionsAmount, cowAmount);
+      data = generator.generateAnotherTestData();
+
       const chart = am4core.create('chartdiv', am4charts.XYChart);
       chart.maskBullets = false;
 
@@ -160,8 +155,6 @@ export class StrictedAreaChartComponent implements OnInit, OnDestroy {
           min: am4core.color(bgColor),
           max: chart.colors.getIndex(0)
       });
-
-      generateTestData();
 
       this.chart = chart;
     });
