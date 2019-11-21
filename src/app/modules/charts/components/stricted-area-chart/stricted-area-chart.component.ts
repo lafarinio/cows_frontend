@@ -6,7 +6,7 @@ import am4themes_material from '@amcharts/amcharts4/themes/material';
 import { StrictedCowPosition } from '../../models/stricted-cow-position.model';
 import { CowShedSide, PositionNames } from '../../models/position.model';
 import { StrictedAreaPosition } from '../../models/srticted-area-position.model';
-import { StrictedPositionGenerator } from '../../services/stricted-position.generator';
+import { StrictedPositionGenerator } from '../../generators/stricted-position.generator';
 import { TimeRange, TimeSteps } from '../../../../base/models/time-range.model';
 import { Deserialize } from 'cerialize';
 
