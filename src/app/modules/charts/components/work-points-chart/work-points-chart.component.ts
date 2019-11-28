@@ -48,16 +48,14 @@ export class WorkPointsChartComponent implements OnInit, OnDestroy {
       series.strokeOpacity = 0;
       series.name = 'Series 1';
 
-      const bullet = series.bullets.push(new am4charts.CircleBullet());
-      bullet.strokeOpacity = 0.2;
-      bullet.stroke = am4core.color('#ffffff');
-      bullet.nonScalingStroke = true;
-      bullet.tooltipText = `"x:{${PositionNames.posX} y:{${PositionNames.posY}}"`;
-
-      bullet.circle.radius = 60;
+      const bullet = series.bullets.push(new am4core.Rectangle());
+      bullet.tooltipText = `X{${PositionNames.posY}} Y{${PositionNames.posX}} : {value.workingValue.formatNumber("#.")} cows`;
+      
+      bullet.width = 10;
+      bullet.height = 10;
 
       series.heatRules.push({
-          target: bullet.circle,
+          target: bullet,
           property: 'fill',
           minValue: 0,
           maxValue: 20,
@@ -65,41 +63,65 @@ export class WorkPointsChartComponent implements OnInit, OnDestroy {
           max: chart.colors.getIndex(0)
       });
 
-      const data: Array<WorkpointAreaPosition> = [
-          {
-              posY: 10,
+      bullet.adapter.add("pixelHeight", function (pixelHeight, target) {
+	var dataItem:any = target.dataItem;
+
+	return dataItem.dataContext.sensorHeight;
+      });
+			 
+      bullet.adapter.add("pixelWidth", function (pixelWidth, target) {
+	var dataItem:any = target.dataItem;
+	
+	return dataItem.dataContext.sensorWidth;
+      });
+					    
+      const data = [
+        {
+	  // upper right corner
+              posY: 10, 
               posX: 0,
+	    sensorWidth: 60, // todo: translate barn to chart dimensions
+	    sensorHeight: 60,
               value: 59,
           },
           {
-              posY: 0,
-              posX: 10,
+              posY: 5,
+            posX: 10,
+	    sensorWidth: 60,
+	    sensorHeight: 60,
               value: 50,
           },
           {
-              posY: 0,
-              posX: 20,
+              posY: 5,
+            posX: 20,
+	    sensorWidth: 100,
+	    sensorHeight: 60,
               value: 40,
           },
           {
               posY: 10,
-              posX: 30,
+            posX: 25,
+	    sensorWidth: 60,
+	    sensorHeight: 100,
               value: 65,
           },
           {
               posY: 20,
-              posX: 20,
+            posX: 20,
+	    sensorWidth: 60,
+	    sensorHeight: 80,
               value: 92,
           },
           {
               posY: 20,
-              posX: 10,
+            posX: 10,
+	    sensorWidth: 80,
+	    sensorHeight: 60,
               value: 30,
           }
       ];
 
       chart.data = data;
-
 
       const sensors = [
           {
