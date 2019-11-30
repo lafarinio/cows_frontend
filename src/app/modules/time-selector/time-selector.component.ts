@@ -48,35 +48,34 @@ export class TimeSelectorComponent implements OnInit {
     this.emitTime(date);
   }
 
-  isMinuteTimelapseRunning = false;
+  isTimelapseRunning = false;
   timelapseTimer;
 
-  timelapseButtonPressed(what: string) {
-    if (what === 'minutes') {
-      if (this.isMinuteTimelapseRunning === false) {
-        console.log('Starting minute timelapse.');
-        this.isMinuteTimelapseRunning = true;
-
-        this.timelapseTimer = setInterval(() => { this.handleMinuteIntervalExpiry(); }, 1500);
-      } else {
-        this.clearTimelapse();
-      }
-    }
-  }
-
-  handleMinuteIntervalExpiry() {
-    console.log('Timelapse.');
-    this.minuteSlider.nativeElement.value++;
-    this.onSliderChange();
-    this.onSliderChangeEnd();
-
-    if (this.minuteSlider.nativeElement.value >= 59) {
+  timelapseButtonPressed() {
+    if (this.isTimelapseRunning === false) {
+      console.log('Starting timelapse.');
+      this.isTimelapseRunning = true;
+      
+      this.timelapseTimer = setInterval(() => { this.handleTimelapseIntervalExpiry(); }, 1500);
+    } else {
       this.clearTimelapse();
     }
   }
 
+  handleTimelapseIntervalExpiry() {
+    console.log('Timelapse.');
+    if (this.minuteSlider.nativeElement.value >= 59) {
+      this.hoursSlider.nativeElement.value++;
+      this.minuteSlider.nativeElement.value = 0;
+    } else { 
+      this.minuteSlider.nativeElement.value++;
+    }
+    this.onSliderChange();
+    this.onSliderChangeEnd();
+  }
+
   clearTimelapse() {
-    this.isMinuteTimelapseRunning = false;
+    this.isTimelapseRunning = false;
     clearInterval(this.timelapseTimer);
   }
 }

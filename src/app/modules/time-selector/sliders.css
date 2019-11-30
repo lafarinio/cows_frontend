@@ -38,14 +38,18 @@
 }
 
 .timeLabel {
-  text-align: center
+    text-align: center
 }
 
 .slidersContainer {
-  width:100%;
-  text-align: center;
+    width:100%;
+    text-align: center;
 }
 
 .slidersContainer input {
-  display: inline-block;
+    display: inline-block;
+}
+
+#timelapseButton {
+    text-align:center;
 }
