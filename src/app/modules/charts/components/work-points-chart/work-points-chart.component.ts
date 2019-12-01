@@ -7,6 +7,17 @@ import { PositionNames } from '../../models/position.model';
 import { WorkpointAreaPosition } from '../../models/workpoint-area-position.model';
 import { UrlService } from '../../../../base/services/url.service';
 
+function barnToChartScalers(bWidth: number, bHeight: number, bX: number, bY: number) {
+  const sX = bX / bWidth;
+  const sY = bY / bHeight;
+
+  return [sX, sY];
+}
+
+const barnWidth = 30
+const barnHeight = 20
+
+
 @Component({
   selector: 'cows-work-points-chart',
   templateUrl: './work-points-chart.component.html'
@@ -31,12 +42,12 @@ export class WorkPointsChartComponent implements OnInit, OnDestroy {
       const xAxis = chart.xAxes.push(new am4charts.ValueAxis());
       xAxis.renderer.minGridDistance = 50;
       xAxis.min = 0;
-      xAxis.max = 30;
+      xAxis.max = barnWidth;
 
       const yAxis = chart.yAxes.push(new am4charts.ValueAxis());
       yAxis.renderer.minGridDistance = 50;
       yAxis.min = 0;
-      yAxis.max = 20;
+      yAxis.max = barnHeight;
 
       const bgColor = new am4core.InterfaceColorSet().getFor('background');
 
@@ -63,62 +74,64 @@ export class WorkPointsChartComponent implements OnInit, OnDestroy {
           max: chart.colors.getIndex(0)
       });
 
+      const contentHeight = 428.67;
+      const contentWidth = 742;
+
       bullet.adapter.add("pixelHeight", function (pixelHeight, target) {
 	var dataItem:any = target.dataItem;
 
-	return dataItem.dataContext.sensorHeight;
+	const scalers = barnToChartScalers(barnWidth, barnHeight, dataItem.dataContext.sensorWidth, dataItem.dataContext.sensorHeight)
+	const scaledHeight = scalers[1] * contentHeight       
+	
+	return scaledHeight;
       });
 			 
       bullet.adapter.add("pixelWidth", function (pixelWidth, target) {
 	var dataItem:any = target.dataItem;
+
+	const scalers = barnToChartScalers(barnWidth, barnHeight, dataItem.dataContext.sensorWidth, dataItem.dataContext.sensorHeight)
+	const scaledWidth = scalers[0] * contentWidth       
 	
-	return dataItem.dataContext.sensorWidth;
+	return scaledWidth;
       });
 					    
       const data = [
         {
-	  // upper right corner
-              posY: 10, 
-              posX: 0,
-	    sensorWidth: 60, // todo: translate barn to chart dimensions
-	    sensorHeight: 60,
-              value: 59,
-          },
-          {
-              posY: 5,
-            posX: 10,
-	    sensorWidth: 60,
-	    sensorHeight: 60,
-              value: 50,
-          },
-          {
-              posY: 5,
-            posX: 20,
-	    sensorWidth: 100,
-	    sensorHeight: 60,
-              value: 40,
-          },
-          {
-              posY: 10,
-            posX: 25,
-	    sensorWidth: 60,
-	    sensorHeight: 100,
-              value: 65,
-          },
-          {
-              posY: 20,
-            posX: 20,
-	    sensorWidth: 60,
-	    sensorHeight: 80,
-              value: 92,
-          },
-          {
-              posY: 20,
-            posX: 10,
-	    sensorWidth: 80,
-	    sensorHeight: 60,
-              value: 30,
-          }
+	  // from lower left corner
+	  posX: 0,
+	  posY: 10, 
+	  sensorWidth: 20,
+	  sensorHeight: 10,
+          value: 1,
+        },
+        {
+	  posX: 0,
+          posY: 20,
+	  sensorWidth: 10,
+	  sensorHeight: 10,
+          value: 2,
+        },
+        {
+	  posX: 10,
+          posY: 20,
+	  sensorWidth: 10,
+	  sensorHeight: 10,
+          value: 3,
+        },
+        {
+	  posX: 20,
+          posY: 20,
+	  sensorWidth: 10,
+	  sensorHeight: 10,
+          value: 4,
+        },
+        {
+	  posX: 20,
+          posY: 10,
+	  sensorWidth: 10,
+	  sensorHeight: 10,
+          value: 5,
+        }
       ];
 
       chart.data = data;
