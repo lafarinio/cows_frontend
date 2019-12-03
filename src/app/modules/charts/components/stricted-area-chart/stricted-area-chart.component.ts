@@ -41,14 +41,22 @@ function parseData(whatTime: Date, barnSize, isBarnSplit): Array<StrictedAreaPos
 }
 
 function barnCoordToChartCoord(bHeight: number, bWidth: number, cHeight: number, cWidth: number, bX: number, bY: number) {
-  // assumes barn coords go from (0,0) in the top left, (maxX, maxY) bottom right
+  // assumes barn coords go from (0,0) in the bottom left, (maxX, maxY) in the top right 
+
   const cX = cWidth - cWidth * (bX / bWidth);
-  const cY = cHeight * (bY / bHeight);
+  const cY = cHeight - cHeight * (bY / bHeight);
 
   return [cX, cY];
 }
 
-function drawSensors(chart: am4charts.XYChart) {
+
+function drawSensors(chart: am4charts.XYChart) {  
+  if (drawSensors.alreadyDrawn === true) {
+    return
+  }
+
+  drawSensors.alreadyDrawn = true;
+  
   // data needs to already exist
   const contentHeight = chart.plotContainer.contentHeight;
   const contentWidth = chart.plotContainer.contentWidth;
@@ -67,7 +75,7 @@ function drawSensors(chart: am4charts.XYChart) {
     },
     {
       sensorX: 200,
-      sensorY: 50
+      sensorY: 33
     },
     {
       sensorX: 100,
@@ -75,7 +83,7 @@ function drawSensors(chart: am4charts.XYChart) {
     },
     {
       sensorX: 0,
-      sensorY: 50
+      sensorY: 66
     }
   ];
 
@@ -94,6 +102,7 @@ function drawSensors(chart: am4charts.XYChart) {
     sensor.appear();
   }
 }
+drawSensors.alreadyDrawn = false;
 
 @Component({
   selector: 'cows-stricted-area-chart',
