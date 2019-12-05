@@ -7,6 +7,17 @@ import { PositionNames } from '../../models/position.model';
 import { WorkpointAreaPosition } from '../../models/workpoint-area-position.model';
 import { UrlService } from '../../../../base/services/url.service';
 
+function barnToChartScalers(bWidth: number, bHeight: number, bX: number, bY: number) {
+  const sX = bX / bWidth;
+  const sY = bY / bHeight;
+
+  return [sX, sY];
+}
+
+const barnWidth = 30
+const barnHeight = 20
+
+
 @Component({
   selector: 'cows-work-points-chart',
   templateUrl: './work-points-chart.component.html'
@@ -31,12 +42,12 @@ export class WorkPointsChartComponent implements OnInit, OnDestroy {
       const xAxis = chart.xAxes.push(new am4charts.ValueAxis());
       xAxis.renderer.minGridDistance = 50;
       xAxis.min = 0;
-      xAxis.max = 30;
+      xAxis.max = barnWidth;
 
       const yAxis = chart.yAxes.push(new am4charts.ValueAxis());
       yAxis.renderer.minGridDistance = 50;
       yAxis.min = 0;
-      yAxis.max = 20;
+      yAxis.max = barnHeight;
 
       const bgColor = new am4core.InterfaceColorSet().getFor('background');
 
@@ -48,16 +59,14 @@ export class WorkPointsChartComponent implements OnInit, OnDestroy {
       series.strokeOpacity = 0;
       series.name = 'Series 1';
 
-      const bullet = series.bullets.push(new am4charts.CircleBullet());
-      bullet.strokeOpacity = 0.2;
-      bullet.stroke = am4core.color('#ffffff');
-      bullet.nonScalingStroke = true;
-      bullet.tooltipText = `"x:{${PositionNames.posX} y:{${PositionNames.posY}}"`;
-
-      bullet.circle.radius = 60;
+      const bullet = series.bullets.push(new am4core.Rectangle());
+      bullet.tooltipText = `X{${PositionNames.posY}} Y{${PositionNames.posX}} : {value.workingValue.formatNumber("#.")} cows`;
+      
+      bullet.width = 10;
+      bullet.height = 10;
 
       series.heatRules.push({
-          target: bullet.circle,
+          target: bullet,
           property: 'fill',
           minValue: 0,
           maxValue: 20,
@@ -65,41 +74,67 @@ export class WorkPointsChartComponent implements OnInit, OnDestroy {
           max: chart.colors.getIndex(0)
       });
 
-      const data: Array<WorkpointAreaPosition> = [
-          {
-              posY: 10,
-              posX: 0,
-              value: 59,
-          },
-          {
-              posY: 0,
-              posX: 10,
-              value: 50,
-          },
-          {
-              posY: 0,
-              posX: 20,
-              value: 40,
-          },
-          {
-              posY: 10,
-              posX: 30,
-              value: 65,
-          },
-          {
-              posY: 20,
-              posX: 20,
-              value: 92,
-          },
-          {
-              posY: 20,
-              posX: 10,
-              value: 30,
-          }
+      const contentHeight = 428.67;
+      const contentWidth = 742;
+
+      bullet.adapter.add("pixelHeight", function (pixelHeight, target) {
+	var dataItem:any = target.dataItem;
+
+	const scalers = barnToChartScalers(barnWidth, barnHeight, dataItem.dataContext.sensorWidth, dataItem.dataContext.sensorHeight)
+	const scaledHeight = scalers[1] * contentHeight       
+	
+	return scaledHeight;
+      });
+			 
+      bullet.adapter.add("pixelWidth", function (pixelWidth, target) {
+	var dataItem:any = target.dataItem;
+
+	const scalers = barnToChartScalers(barnWidth, barnHeight, dataItem.dataContext.sensorWidth, dataItem.dataContext.sensorHeight)
+	const scaledWidth = scalers[0] * contentWidth       
+	
+	return scaledWidth;
+      });
+					    
+      const data = [
+        {
+	  // from lower left corner
+	  posX: 0,
+	  posY: 10, 
+	  sensorWidth: 20,
+	  sensorHeight: 10,
+          value: 1,
+        },
+        {
+	  posX: 0,
+          posY: 20,
+	  sensorWidth: 10,
+	  sensorHeight: 10,
+          value: 2,
+        },
+        {
+	  posX: 10,
+          posY: 20,
+	  sensorWidth: 10,
+	  sensorHeight: 10,
+          value: 3,
+        },
+        {
+	  posX: 20,
+          posY: 20,
+	  sensorWidth: 10,
+	  sensorHeight: 10,
+          value: 4,
+        },
+        {
+	  posX: 20,
+          posY: 10,
+	  sensorWidth: 10,
+	  sensorHeight: 10,
+          value: 5,
+        }
       ];
 
       chart.data = data;
-
 
       const sensors = [
           {
