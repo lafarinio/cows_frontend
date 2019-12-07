@@ -20,7 +20,6 @@ export class StrictedPositionService {
     console.log(path, url);
     return this.http.get(url).pipe(
       map(response => {
-        console.log(response);
         return Deserialize(response, StrictedCowPosition);
       })
     );
