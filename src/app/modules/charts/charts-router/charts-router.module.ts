@@ -11,7 +11,7 @@ import { chartsRoutes } from './charts-routes';
     CommonModule,
     RouterModule.forRoot(
       chartsRoutes,
-      { enableTracing: true } // <-- debugging purposes only
+      { enableTracing: false } // <-- debugging purposes only
     ),
   ]
 })
