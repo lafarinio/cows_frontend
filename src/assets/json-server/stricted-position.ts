@@ -9,8 +9,8 @@ const timeRange: TimeRange = Deserialize({
   endDate: new Date(2019, 11, 13),
   timeStep: TimeSteps.ONE_MINUTE
 }, TimeRange);
-const sections = 2;
-const cowAmount = 50;
+const sections = 10;
+const cowAmount = 25;
 const generator = new StrictedPositionGenerator(timeRange, sections, cowAmount);
 
 const data = generator.generateAnotherTestData();

@@ -10,8 +10,8 @@ var timeRange = cerialize_1.Deserialize({
     endDate: new Date(2019, 11, 13),
     timeStep: time_range_model_1.TimeSteps.ONE_MINUTE
 }, time_range_model_1.TimeRange);
-var sections = 2;
-var cowAmount = 50;
+var sections = 10;
+var cowAmount = 25;
 var generator = new stricted_position_generator_1.StrictedPositionGenerator(timeRange, sections, cowAmount);
 var data = generator.generateAnotherTestData();
 var cows = {
