@@ -6,8 +6,8 @@ var cerialize_1 = require("cerialize");
 // @ts-ignore
 var fs = require("fs");
 var timeRange = cerialize_1.Deserialize({
-    startDate: new Date(2019, 11, 12),
-    endDate: new Date(2019, 11, 13),
+    startDate: new Date(2019, 10, 11),
+    endDate: new Date(2019, 10, 12),
     timeStep: time_range_model_1.TimeSteps.ONE_MINUTE
 }, time_range_model_1.TimeRange);
 var sections = 10;
