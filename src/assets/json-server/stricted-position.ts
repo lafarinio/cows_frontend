@@ -4,9 +4,10 @@ import { Deserialize } from 'cerialize';
 // @ts-ignore
 import * as fs from 'fs';
 
+const stupidJavaScriptFixMonthFromZero = -1;
 const timeRange: TimeRange = Deserialize({
-  startDate: new Date(2019, 11, 12),
-  endDate: new Date(2019, 11, 13),
+  startDate: new Date(2019, 11 + stupidJavaScriptFixMonthFromZero, 11),
+  endDate: new Date(2019, 11 + stupidJavaScriptFixMonthFromZero, 12),
   timeStep: TimeSteps.ONE_MINUTE
 }, TimeRange);
 const sections = 10;
