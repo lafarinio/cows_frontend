@@ -6,7 +6,7 @@ export class DateSerializer {
   }
 
   Deserialize(json: any) {
-    return Date.parse(json);
+    return new Date(Date.parse(json));
   }
 }
 
