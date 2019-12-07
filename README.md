@@ -14,6 +14,8 @@ Run `ng serve -c prodDebug` for serving application for testing/development purp
 
 Run `ng serve -c prod` for production (difference: added optimalization, which prolongs compilation time).
 
+Run `ng serve -c devDebug` for development purposes, especially to work with locally created server by `json-server`.
+
 ## Generating components
 
 Run `ng generate c component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
