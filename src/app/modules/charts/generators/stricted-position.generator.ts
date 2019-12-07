@@ -14,7 +14,7 @@ export class StrictedPositionGenerator {
     time: Factory.each(i => new Date(this.timeRange.startDate.getTime() + this.timeRange.timeStep * i))
   });
   private positionFactory = Factory.Sync.makeFactory<StrictedCowPosition>({
-    id: Factory.each(i => i.toString()),
+    id: Factory.each(i => (i % this.cowAmount).toString()),
     posX: Factory.each(() => Math.floor(Math.random() * this.sectionsAmount + 1)),
     posY: Factory.each(() => Math.random() > 0.5 ? CowShedSide.A : CowShedSide.B),
     time: new Date()
