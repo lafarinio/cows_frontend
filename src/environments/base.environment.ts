@@ -1,5 +1,5 @@
 
 export const urlsConfiguration = {
-  cowLists: 'example/v1/cows',
-  cow: 'example/v1/cows/:id'
+  cowLists: 'cows',
+  cow: 'cows/:id'
 };
