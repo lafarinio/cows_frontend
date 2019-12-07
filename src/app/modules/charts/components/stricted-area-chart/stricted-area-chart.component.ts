@@ -6,10 +6,8 @@ import am4themes_material from '@amcharts/amcharts4/themes/material';
 import { StrictedCowPosition } from '../../models/stricted-cow-position.model';
 import { CowShedSide, PositionNames } from '../../models/position.model';
 import { StrictedAreaPosition } from '../../models/srticted-area-position.model';
-import { StrictedPositionGenerator } from '../../generators/stricted-position.generator';
-import { TimeRange, TimeSteps } from '../../../../base/models/time-range.model';
-import { Deserialize } from 'cerialize';
 import { StrictedPositionService } from '../../services/stricted-position.service';
+import { AbstractCleanableComponent } from '../../../../base/components/abstract-cleanable/abstract-cleanable.component';
 
 
 
@@ -17,13 +15,13 @@ import { StrictedPositionService } from '../../services/stricted-position.servic
   selector: 'cows-stricted-area-chart',
   templateUrl: './stricted-area-chart.component.html'
 })
-export class StrictedAreaChartComponent implements OnInit, OnDestroy {
+export class StrictedAreaChartComponent extends AbstractCleanableComponent implements OnInit, OnDestroy {
   private chart: am4charts.XYChart;
   data: Array<StrictedCowPosition> = [];
   private alreadyDrawn = false;
 
   constructor(private zone: NgZone,
-              private strictedPositionService: StrictedPositionService) {}
+              private strictedPositionService: StrictedPositionService) { super(); }
 
   ngOnInit() {
     this.zone.runOutsideAngular(() => {
@@ -41,6 +39,7 @@ export class StrictedAreaChartComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
+    super.ngOnDestroy();
     this.zone.runOutsideAngular(() => {
       if (this.chart) {
         this.chart.dispose();
@@ -49,16 +48,13 @@ export class StrictedAreaChartComponent implements OnInit, OnDestroy {
   }
 
   private initData() {
-    const sectionsAmount = 10;
-    const cowAmount = 30;
-    const timeRange: TimeRange = Deserialize({
-      startDate: new Date(2019, 10, 11),
-      endDate: new Date(2019, 10, 12),
-      timeStep: TimeSteps.ONE_MINUTE
-    }, TimeRange);
-    const generator = new StrictedPositionGenerator(timeRange, sectionsAmount, cowAmount);
-    this.data = generator.generateAnotherTestData();
-    this.strictedPositionService.getCows().subscribe(a => console.log(a));
+    // addSubscription jest czescia AbstractCleaneble;
+    // komponent ten pozwala na zarzadzanie subskrypcjami i sam niszczy posiadane subskrypcje
+    this.addSubscription(
+      this.strictedPositionService.getCows().subscribe(cowList => {
+        this.data = cowList;
+      })
+    );
   }
 
   private initChart() {
