@@ -21,6 +21,18 @@ Run `ng generate c component-name` to generate a new component. You can also use
 (RK) Root-path (/) for generating purposes is src/app. For example, to generate component in 'src/app/base' you should type:
 
 `ng g c base/component-name`
+
+## Serving fake server
+
+To build `stricted-position` generated local server:
+
+1) Create .js file from .ts with command:
+`tsc src/assets/json-server/stricted-position.ts`
+2) Build .json with created .js file: `node src/assets/json-server/stricted-position.js`
+3) Run `json-server`: `json-server stricted-position.json`
+
+It is recommended to install  `json-server` globally, so it is easily accessible from command line.
+
 ## Build
 
 Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
