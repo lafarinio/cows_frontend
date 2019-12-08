@@ -34,7 +34,7 @@ export class StrictedAreaChartComponent extends AbstractCleanableComponent imple
   onTimeSelection(time: Date) {
     console.log(time);
 
-    this.chart.data = this.parseData(time, 10, true);
+    this.chart.data = this.strictedPositionService.parseData(this.data, time, 10, true);
     this.drawSensors(this.chart);
   }
 
@@ -99,34 +99,6 @@ export class StrictedAreaChartComponent extends AbstractCleanableComponent imple
     });
 
     this.chart = chart;
-  }
-
-  private parseData(whatTime: Date, barnSize, isBarnSplit): Array<StrictedAreaPosition> {
-    const filteredData: Array<StrictedAreaPosition> = [];
-
-    for (let i = 1; i <= barnSize; i++) {
-      filteredData.push({
-        posX: i,
-        posY: CowShedSide.A,
-        value: 0
-      });
-    }
-    if (isBarnSplit === true) {
-      for (let i = 1; i <= barnSize; i++) {
-        filteredData.push({
-          posX: i,
-          posY: CowShedSide.B,
-          value: 0
-        });
-      }
-    }
-
-    const dataTimeRange = this.data.filter((value: StrictedCowPosition) => value.time.getTime() === whatTime.getTime());
-    for (const selectedData of dataTimeRange) {
-      const idx = (selectedData.posX - 1) + (selectedData.posY === CowShedSide.B ? barnSize : 0);
-      filteredData[idx].value += 1;
-    }
-    return filteredData;
   }
 
   private drawSensors(chart: am4charts.XYChart) {
