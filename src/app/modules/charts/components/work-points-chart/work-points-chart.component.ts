@@ -14,6 +14,19 @@ function barnToChartScalers(bWidth: number, bHeight: number, bX: number, bY: num
   return [sX, sY];
 }
 
+function barnCoordToChartCoord(bWidth: number, bHeight: number, cWidth: number, cHeight: number, bX: number, bY: number) {
+  // assumes barn coords go from (0,0) in the bottom left, (maxX, maxY) in the top right
+
+  let sX: number;
+  let sY: number;
+  [sX, sY] = barnToChartScalers(bWidth, bHeight, bX, bY);
+  
+  const cX = cWidth - cWidth * sX;
+  const cY = cHeight - cHeight * sY;
+
+  return [cX, cY];
+}
+
 const barnWidth = 30
 const barnHeight = 20
 
@@ -87,7 +100,7 @@ export class WorkPointsChartComponent implements OnInit, OnDestroy {
       });
 			 
       bullet.adapter.add("pixelWidth", function (pixelWidth, target) {
-	var dataItem:any = target.dataItem;
+	const dataItem: any = target.dataItem;
 
 	const scalers = barnToChartScalers(barnWidth, barnHeight, dataItem.dataContext.sensorWidth, dataItem.dataContext.sensorHeight)
 	const scaledWidth = scalers[0] * contentWidth       
@@ -137,34 +150,41 @@ export class WorkPointsChartComponent implements OnInit, OnDestroy {
       chart.data = data;
 
       const sensors = [
-          {
-              sensorX: 450,
-              sensorY: 0
-          },
-          {
-              sensorX: 0,
-              sensorY: 200
-          },
-          {
-              sensorX: 250,
-              sensorY: 0
-          }
+        {
+          sensorX: 0,
+          sensorY: 10
+        },
+        {
+          sensorX: 0,
+          sensorY: 20
+        },
+        {
+          sensorX: 10,
+          sensorY: 20
+        },
+	{
+          sensorX: 20,
+          sensorY: 20
+        },
+	{
+          sensorX: 30,
+          sensorY: 20
+        }
       ];
 
       for (const pos of sensors) {
-        const sensor = new am4core.Image();
-        sensor.href = 'assets/img/sensor_icon.svg';
+	const sensor = new am4core.Image();
+	sensor.href = 'assets/img/sensor_icon.svg';
+	sensor.valign = 'top';
+	sensor.align = 'right';
 
-        sensor.valign = 'top';
-        sensor.align = 'right';
-
-        sensor.marginTop = pos.sensorY;
-        sensor.marginRight = pos.sensorX;
-
-        sensor.zIndex = 100;
-
-        chart.tooltipContainer.children.push(sensor);
-        sensor.appear();
+	const coords = barnCoordToChartCoord(barnWidth, barnHeight, contentWidth, contentHeight, pos.sensorX, pos.sensorY);
+	sensor.marginRight = coords[0] - (sensor.innerWidth / 4);
+	sensor.marginTop = coords[1] - (sensor.innerHeight / 4);
+	
+	sensor.zIndex = 100;
+	chart.tooltipContainer.children.push(sensor);
+	sensor.appear();
       }
 
       this.chart = chart;

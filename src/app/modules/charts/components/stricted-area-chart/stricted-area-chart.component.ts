@@ -172,7 +172,7 @@ export class StrictedAreaChartComponent extends AbstractCleanableComponent imple
       sensor.valign = 'top';
       sensor.align = 'right';
 
-      const coords = this.barnCoordToChartCoord(barnHeight, barnWidth, contentHeight, contentWidth, pos.sensorX, pos.sensorY);
+      const coords = this.barnCoordToChartCoord(barnWidth, barnHeight, contentWidth, contentHeight, pos.sensorX, pos.sensorY);
       sensor.marginRight = coords[0] - (sensor.innerWidth / 4);
       sensor.marginTop = coords[1] - (sensor.innerHeight / 4);
 
@@ -182,7 +182,7 @@ export class StrictedAreaChartComponent extends AbstractCleanableComponent imple
     }
   }
 
-  private barnCoordToChartCoord(bHeight: number, bWidth: number, cHeight: number, cWidth: number, bX: number, bY: number) {
+  private barnCoordToChartCoord(bWidth: number, bHeight: number, cWidth: number, cHeight: number, bX: number, bY: number) {
     // assumes barn coords go from (0,0) in the bottom left, (maxX, maxY) in the top right
 
     const cX = cWidth - cWidth * (bX / bWidth);
