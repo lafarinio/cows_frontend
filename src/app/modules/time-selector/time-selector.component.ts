@@ -1,5 +1,7 @@
 import { Component, EventEmitter, OnInit, Output, ViewChild, ElementRef } from '@angular/core';
 
+import Pikaday from 'pikaday';
+
 @Component({
   selector: 'cows-time-selector',
   templateUrl: './time-selector.component.html',
@@ -7,16 +9,27 @@ import { Component, EventEmitter, OnInit, Output, ViewChild, ElementRef } from '
 })
 export class TimeSelectorComponent implements OnInit {
   selectedTime = ' / / / ';
+  calendar: Pikaday;
 
   @ViewChild('minuteSlider', {static: false}) minuteSlider: ElementRef;
   @ViewChild('hoursSlider', {static: false}) hoursSlider: ElementRef;
-
+  @ViewChild('calendar', {static: false}) datepicker: ElementRef;
+  
   @Output()
   timeEventEmitter = new EventEmitter<Date>();
 
   constructor() { }
 
   ngOnInit() {
+  }
+
+  ngAfterViewInit() {
+    this.calendar = new Pikaday({
+      field: this.datepicker.nativeElement,
+      onSelect: function() {
+	console.log(this.getMoment().format('Do MMMM YYYY'));
+      }
+    });
   }
 
   emitTime(time: Date) {

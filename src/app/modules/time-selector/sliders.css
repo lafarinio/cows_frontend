@@ -46,8 +46,14 @@
     text-align: center;
 }
 
+.buttonContainer {
+    width:100%;
+    text-align: center;
+}
+
 .slidersContainer input {
     display: inline-block;
+    text-align: center;
 }
 
 #timelapseButton {
