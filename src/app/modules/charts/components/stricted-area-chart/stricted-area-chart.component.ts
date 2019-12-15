@@ -8,6 +8,8 @@ import { CowShedSide, PositionNames } from '../../models/position.model';
 import { StrictedAreaPosition } from '../../models/srticted-area-position.model';
 import { StrictedPositionService } from '../../services/stricted-position.service';
 import { AbstractCleanableComponent } from '../../../../base/components/abstract-cleanable/abstract-cleanable.component';
+import { BehaviorSubject, forkJoin, of } from 'rxjs';
+import { filter, first, mergeMap, tap } from 'rxjs/operators';
 
 
 
@@ -17,6 +19,8 @@ import { AbstractCleanableComponent } from '../../../../base/components/abstract
 })
 export class StrictedAreaChartComponent extends AbstractCleanableComponent implements OnInit, OnDestroy {
   private chart: am4charts.XYChart;
+  private isChartBusy$ = new BehaviorSubject(true);
+  private isDataBusy$ = new BehaviorSubject(true);
   data: Array<StrictedCowPosition> = [];
   private alreadyDrawn = false;
 
@@ -33,9 +37,21 @@ export class StrictedAreaChartComponent extends AbstractCleanableComponent imple
 
   onTimeSelection(time: Date) {
     console.log(time);
+    const chartObservable$ = this.isChartBusy$.asObservable();
+    const dataObservable$ = this.isDataBusy$.asObservable();
 
-    this.chart.data = this.strictedPositionService.parseData(this.data, time, 10, true);
-    this.drawSensors(this.chart);
+    this.addSubscription(
+      chartObservable$.pipe(
+        mergeMap((isChartBusy) => {
+          return dataObservable$.pipe(
+            filter((isDaTaBusy) => !isDaTaBusy && !isChartBusy)
+          );
+        })
+      ).subscribe(() => {
+        this.chart.data = this.strictedPositionService.parseData(this.data, time, 10, true);
+        this.drawSensors(this.chart);
+      })
+    );
   }
 
   ngOnDestroy() {
@@ -53,11 +69,13 @@ export class StrictedAreaChartComponent extends AbstractCleanableComponent imple
     this.addSubscription(
       this.strictedPositionService.getCows().subscribe(cowList => {
         this.data = cowList;
+        this.isDataBusy$.next(false);
       })
     );
   }
 
   private initChart() {
+    this.isChartBusy$.next(true);
     const chart = am4core.create('chartdiv', am4charts.XYChart);
     chart.maskBullets = false;
 
@@ -99,6 +117,7 @@ export class StrictedAreaChartComponent extends AbstractCleanableComponent imple
     });
 
     this.chart = chart;
+    this.isChartBusy$.next(false);
   }
 
   private drawSensors(chart: am4charts.XYChart) {

@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit, Output, ViewChild, ElementRef } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 
 import Pikaday from 'pikaday';
 
@@ -7,14 +7,14 @@ import Pikaday from 'pikaday';
   templateUrl: './time-selector.component.html',
   styleUrls: ['sliders.css']
 })
-export class TimeSelectorComponent implements OnInit {
+export class TimeSelectorComponent implements OnInit, AfterViewInit {
   selectedTime = ' / / / ';
   calendar: Pikaday;
 
   @ViewChild('minuteSlider', {static: false}) minuteSlider: ElementRef;
   @ViewChild('hoursSlider', {static: false}) hoursSlider: ElementRef;
   @ViewChild('calendar', {static: false}) datepicker: ElementRef;
-  
+
   @Output()
   timeEventEmitter = new EventEmitter<Date>();
 
@@ -27,9 +27,15 @@ export class TimeSelectorComponent implements OnInit {
     this.calendar = new Pikaday({
       field: this.datepicker.nativeElement,
       onSelect: function() {
-	console.log(this.getMoment().format('Do MMMM YYYY'));
+        console.log(this.getMoment().format('Do MMMM YYYY'));
       }
     });
+    this.emitInitialTime();
+  }
+
+  private emitInitialTime() {
+    this.onSliderChange();
+    this.onSliderChangeEnd();
   }
 
   emitTime(time: Date) {
@@ -41,7 +47,7 @@ export class TimeSelectorComponent implements OnInit {
   }
 
   getDateFromInputs(): Date {
-    let date = new Date(Date.UTC(2019, 10, 11, 8, 10));
+    const date = new Date(Date.UTC(2019, 10, 11, 8, 10));
 
     date.setMinutes(this.minuteSlider.nativeElement.value);
     date.setHours(this.hoursSlider.nativeElement.value);
@@ -68,7 +74,7 @@ export class TimeSelectorComponent implements OnInit {
     if (this.isTimelapseRunning === false) {
       console.log('Starting timelapse.');
       this.isTimelapseRunning = true;
-      
+
       this.timelapseTimer = setInterval(() => { this.handleTimelapseIntervalExpiry(); }, 1500);
     } else {
       this.clearTimelapse();
@@ -80,7 +86,7 @@ export class TimeSelectorComponent implements OnInit {
     if (this.minuteSlider.nativeElement.value >= 59) {
       this.hoursSlider.nativeElement.value++;
       this.minuteSlider.nativeElement.value = 0;
-    } else { 
+    } else {
       this.minuteSlider.nativeElement.value++;
     }
     this.onSliderChange();
