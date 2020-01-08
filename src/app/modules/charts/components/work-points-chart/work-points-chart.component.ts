@@ -41,6 +41,15 @@ export class WorkPointsChartComponent implements OnInit, OnDestroy {
   constructor(private zone: NgZone,
               private urlService: UrlService) {}
 
+  onBarnSelection(barnId: number) {
+    console.log("Selected barn " + barnId);
+  }
+
+
+  onTimeSelection(time: Date) {
+    console.log(time);
+  }
+  
   ngOnInit() {
     // const example = this.urlService.getUrl('cow', {id: '123'});
     // console.log(example);

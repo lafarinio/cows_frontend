@@ -17,6 +17,7 @@ import { filter, first, mergeMap, tap } from 'rxjs/operators';
   selector: 'cows-stricted-area-chart',
   templateUrl: './stricted-area-chart.component.html'
 })
+
 export class StrictedAreaChartComponent extends AbstractCleanableComponent implements OnInit, OnDestroy {
   private chart: am4charts.XYChart;
   private isChartBusy$ = new BehaviorSubject(true);
@@ -32,6 +33,10 @@ export class StrictedAreaChartComponent extends AbstractCleanableComponent imple
       this.initData();
       this.initChart();
     });
+  }
+
+  onBarnSelection(barnId: number) {
+    console.log("Selected barn " + barnId);
   }
 
 
