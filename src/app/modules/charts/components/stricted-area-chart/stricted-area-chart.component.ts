@@ -12,17 +12,20 @@ import { BehaviorSubject, forkJoin, of } from 'rxjs';
 import { filter, first, mergeMap, tap } from 'rxjs/operators';
 
 
-
 @Component({
   selector: 'cows-stricted-area-chart',
   templateUrl: './stricted-area-chart.component.html'
 })
-
 export class StrictedAreaChartComponent extends AbstractCleanableComponent implements OnInit, OnDestroy {
   private chart: am4charts.XYChart;
+  private sensorImages: Array<am4core.Image>;
+
   private isChartBusy$ = new BehaviorSubject(true);
   private isDataBusy$ = new BehaviorSubject(true);
+  
   data: Array<StrictedCowPosition> = [];
+  private selectedBarn: any; //cowshedData
+  
   private alreadyDrawn = false;
 
   constructor(private zone: NgZone,
@@ -35,8 +38,12 @@ export class StrictedAreaChartComponent extends AbstractCleanableComponent imple
     });
   }
 
-  onBarnSelection(barnId: number) {
-    console.log("Selected barn " + barnId);
+  onBarnSelection(barn: any/*cowshedData*/) {
+    console.log("Selected barn " + barn.idCowShed);
+
+    this.selectedBarn = barn;
+
+    this.drawSensors(this.chart)
   }
 
 
@@ -123,14 +130,20 @@ export class StrictedAreaChartComponent extends AbstractCleanableComponent imple
 
     this.chart = chart;
     this.isChartBusy$.next(false);
+
+    this.sensorImages = []
   }
 
   private drawSensors(chart: am4charts.XYChart) {
-    if (this.alreadyDrawn) {
-      return ;
+    console.log("Drawing sensors for barn, width:" + this.selectedBarn.width + " height:" + this.selectedBarn.height);
+    
+    for (const im of this.sensorImages) {
+      im.dispose();
     }
 
-    this.alreadyDrawn = true;
+    const sensors = this.selectedBarn.wallpointDtos;
+    const barnHeight = this.selectedBarn.height; 
+    const barnWidth = this.selectedBarn.width;
 
     // data needs to already exist
     const contentHeight = chart.plotContainer.contentHeight;
@@ -138,41 +151,23 @@ export class StrictedAreaChartComponent extends AbstractCleanableComponent imple
 
     if (contentHeight == null) {
       console.log('Error - chart still not fully loaded! Can\'t draw sensors.');
+      return;
     }
 
-    const barnHeight = 100; // should come from db
-    const barnWidth = 200; // should come from db
-
-    const sensors = [ // in barn coords, should come from db
-      {
-        sensorX: 100,
-        sensorY: 0
-      },
-      {
-        sensorX: 200,
-        sensorY: 33
-      },
-      {
-        sensorX: 100,
-        sensorY: 100
-      },
-      {
-        sensorX: 0,
-        sensorY: 66
-      }
-    ];
-
-    for (const pos of sensors) {
+    
+    for (const s of sensors) {
       const sensor = new am4core.Image();
       sensor.href = 'assets/img/sensor_icon.svg';
       sensor.valign = 'top';
       sensor.align = 'right';
 
-      const coords = this.barnCoordToChartCoord(barnWidth, barnHeight, contentWidth, contentHeight, pos.sensorX, pos.sensorY);
+      const coords = this.barnCoordToChartCoord(barnWidth, barnHeight, contentWidth, contentHeight, s.position_x, s.position_y);
       sensor.marginRight = coords[0] - (sensor.innerWidth / 4);
       sensor.marginTop = coords[1] - (sensor.innerHeight / 4);
 
       sensor.zIndex = 100;
+
+      this.sensorImages.push(sensor);
       chart.tooltipContainer.children.push(sensor);
       sensor.appear();
     }

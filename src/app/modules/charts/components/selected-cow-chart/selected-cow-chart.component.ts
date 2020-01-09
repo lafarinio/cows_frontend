@@ -20,7 +20,7 @@ export class SelectedCowChartComponent implements OnInit, OnDestroy {
     console.log(time);
   }
 
-  onBarnSelection(barnId: number) {
-    console.log("Selected barn " + barnId);
+  onBarnSelection(barn: any/*cowshedData*/) {
+    console.log("Selected barn " + barn.idCowShed + " " + barn.width);
   }
 }
