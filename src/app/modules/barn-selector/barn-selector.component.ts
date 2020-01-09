@@ -1,5 +1,7 @@
 import { Component, EventEmitter, OnInit, Output, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { first } from 'rxjs/operators';
+
 
 @Component({
   selector: 'barn-selector',
@@ -28,7 +30,7 @@ export class BarnSelectorComponent implements OnInit, AfterViewInit {
 
  
   emitBarnId(id: number) {
-    this.barnData.subscribe(data => { // TODO: add pipe(first())
+    this.barnData.pipe(first()).subscribe(data => {
       this.barnSelectedEventEmitter.emit(data[id]);
     });
     
