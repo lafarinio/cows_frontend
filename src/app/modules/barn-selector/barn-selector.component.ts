@@ -1,32 +1,26 @@
 import { Component, EventEmitter, OnInit, Output, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
-export interface Barns {
-  
-}
-
 @Component({
   selector: 'barn-selector',
   templateUrl: './barn-selector.component.html',
   // styleUrls: ['sliders.css']
 })
-
 export class BarnSelectorComponent implements OnInit, AfterViewInit {
 
   @Output()
-  barnSelectedEventEmitter = new EventEmitter<number>();
+  barnSelectedEventEmitter = new EventEmitter<any>(); // CowshedData
 
+  barnData: any //Observable<Array<CowshedData>>
+  
   constructor(private http: HttpClient) { }
 
   ngOnInit() {
-    //const restUrl = "http://10.0.0.11:8080/cowShed/getAll"
+    const restUrl = "http://10.0.0.11:8080/cowShed/getAll"
 
-    //var barns;
-    //this.http.get(restUrl).subscribe((data: any) => barns;
+    this.barnData = this.http.get(restUrl);
 
-    //for (var i = 0; i < barns.length; i++) {
-    //  console.log(barns[i].idCowshed + " " + barns[i].width);
-    //}
+    this.emitBarnId(0);
   }
 
   ngAfterViewInit() {
@@ -34,7 +28,11 @@ export class BarnSelectorComponent implements OnInit, AfterViewInit {
 
  
   emitBarnId(id: number) {
-    this.barnSelectedEventEmitter.emit(id);
+    this.barnData.subscribe(data => { // TODO: add pipe(first())
+      this.barnSelectedEventEmitter.emit(data[id]);
+    });
+    
+    //this.barnSelectedEventEmitter.emit(id);
   }
 
   onDropdownChange(id: number) {
