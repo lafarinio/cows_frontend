@@ -1,6 +1,9 @@
 import { Component, EventEmitter, OnInit, Output, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { first } from 'rxjs/operators';
+import { Deserialize } from 'cerialize';
+
+import { CowshedData } from '../charts/models/CowshedData.model';
 
 
 @Component({
@@ -11,9 +14,9 @@ import { first } from 'rxjs/operators';
 export class BarnSelectorComponent implements OnInit, AfterViewInit {
 
   @Output()
-  barnSelectedEventEmitter = new EventEmitter<any>(); // CowshedData
+  barnSelectedEventEmitter = new EventEmitter<CowshedData>();
 
-  barnData: any //Observable<Array<CowshedData>>
+  barnData: any; //Observable<Array<CowshedData>>
   
   constructor(private http: HttpClient) { }
 
@@ -31,10 +34,9 @@ export class BarnSelectorComponent implements OnInit, AfterViewInit {
  
   emitBarnId(id: number) {
     this.barnData.pipe(first()).subscribe(data => {
-      this.barnSelectedEventEmitter.emit(data[id]);
+      const barnData: CowshedData = Deserialize(data[id], CowshedData);
+      this.barnSelectedEventEmitter.emit(barnData);
     });
-    
-    //this.barnSelectedEventEmitter.emit(id);
   }
 
   onDropdownChange(id: number) {

@@ -7,10 +7,14 @@ import { StrictedCowPosition } from '../../models/stricted-cow-position.model';
 import { CowShedSide, PositionNames } from '../../models/position.model';
 import { StrictedAreaPosition } from '../../models/srticted-area-position.model';
 import { StrictedPositionService } from '../../services/stricted-position.service';
+
+import { CowshedData } from '../../models/CowshedData.model';
+
+import { CowDataService } from '../../services/cow-data.service'; 
+
 import { AbstractCleanableComponent } from '../../../../base/components/abstract-cleanable/abstract-cleanable.component';
 import { BehaviorSubject, forkJoin, of } from 'rxjs';
 import { filter, first, mergeMap, tap } from 'rxjs/operators';
-
 
 @Component({
   selector: 'cows-stricted-area-chart',
@@ -24,7 +28,7 @@ export class StrictedAreaChartComponent extends AbstractCleanableComponent imple
   private isDataBusy$ = new BehaviorSubject(true);
   
   data: Array<StrictedCowPosition> = [];
-  private selectedBarn: any; //cowshedData
+  private selectedBarn: CowshedData;
   
   private alreadyDrawn = false;
 
@@ -38,9 +42,7 @@ export class StrictedAreaChartComponent extends AbstractCleanableComponent imple
     });
   }
 
-  onBarnSelection(barn: any/*cowshedData*/) {
-    console.log("Selected barn " + barn.idCowShed);
-
+  onBarnSelection(barn: CowshedData) {
     this.selectedBarn = barn;
 
     this.drawSensors(this.chart)
@@ -135,13 +137,13 @@ export class StrictedAreaChartComponent extends AbstractCleanableComponent imple
   }
 
   private drawSensors(chart: am4charts.XYChart) {
-    console.log("Drawing sensors for barn, width:" + this.selectedBarn.width + " height:" + this.selectedBarn.height);
+    console.log("Drawing sensors for barn " + this.selectedBarn.cowshedId + " | width:" + this.selectedBarn.width + " height:" + this.selectedBarn.height);
     
     for (const im of this.sensorImages) {
       im.dispose();
     }
 
-    const sensors = this.selectedBarn.wallpointDtos;
+    const sensors = this.selectedBarn.wallpoints;
     const barnHeight = this.selectedBarn.height; 
     const barnWidth = this.selectedBarn.width;
 

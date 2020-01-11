@@ -4,8 +4,9 @@ import { SelectedCowChartComponent } from './components/selected-cow-chart/selec
 import { StrictedAreaChartComponent } from './components/stricted-area-chart/stricted-area-chart.component';
 import { WorkPointsChartComponent } from './components/work-points-chart/work-points-chart.component';
 import { ModulesModule } from '../modules.module';
-import { StrictedPositionService } from './services/stricted-position.service';
 
+import { StrictedPositionService } from './services/stricted-position.service';
+import { CowDataService } from './services/cow-data.service';
 
 
 @NgModule({
@@ -17,6 +18,6 @@ import { StrictedPositionService } from './services/stricted-position.service';
     CommonModule,
     ModulesModule
   ],
-  providers: [StrictedPositionService]
+  providers: [StrictedPositionService, CowDataService]
 })
 export class ChartsModule { }
