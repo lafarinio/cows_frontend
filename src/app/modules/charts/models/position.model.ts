@@ -20,5 +20,5 @@ export class Position implements AbstractPosition {
 export enum PositionNames {
   posX = 'posX',
   posY = 'posY',
-  value = 'value'
+  value = 'numOfCows'
 }

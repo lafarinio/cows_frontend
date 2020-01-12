@@ -31,10 +31,10 @@ export class TimeSelectorComponent implements OnInit, AfterViewInit {
 	self.onCalendarChange();
       }
     });
-    this.calendar.setDate(new Date(Date.UTC(2019, 10, 11))); // get this from db
-    this.calendar.setMinDate(new Date(Date.UTC(2019, 10, 10)));
-    this.calendar.setMaxDate(new Date(Date.UTC(2019, 10, 12)));
-    
+    this.calendar.setDate(new Date(Date.UTC(2020, 0, 12))); // get this from db
+    this.calendar.setMinDate(new Date(Date.UTC(2020, 0, 11)));
+    this.calendar.setMaxDate(new Date(Date.UTC(2020, 0, 13)));
+
     this.emitInitialTime();
   }
 
@@ -55,7 +55,7 @@ export class TimeSelectorComponent implements OnInit, AfterViewInit {
   getDateFromInputs(): Date {
     //const date = new Date(Date.UTC(2019, 10, 11, 8, 10));
     const date = this.calendar.getDate();
-    
+
     date.setMinutes(this.minuteSlider.nativeElement.value);
     date.setHours(this.hoursSlider.nativeElement.value);
 

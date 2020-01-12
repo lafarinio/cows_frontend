@@ -10,11 +10,11 @@ import { StrictedPositionService } from '../../services/stricted-position.servic
 
 import { CowshedData } from '../../models/CowshedData.model';
 
-import { CowDataService } from '../../services/cow-data.service'; 
 
 import { AbstractCleanableComponent } from '../../../../base/components/abstract-cleanable/abstract-cleanable.component';
 import { BehaviorSubject, forkJoin, of } from 'rxjs';
 import { filter, first, mergeMap, tap } from 'rxjs/operators';
+import { exists } from '../../../../base/operators/exists';
 
 @Component({
   selector: 'cows-stricted-area-chart',
@@ -25,11 +25,11 @@ export class StrictedAreaChartComponent extends AbstractCleanableComponent imple
   private sensorImages: Array<am4core.Image>;
 
   private isChartBusy$ = new BehaviorSubject(true);
-  private isDataBusy$ = new BehaviorSubject(true);
-  
+  private isBarnBusy$ = new BehaviorSubject(true);
+
   data: Array<StrictedCowPosition> = [];
   private selectedBarn: CowshedData;
-  
+
   private alreadyDrawn = false;
 
   constructor(private zone: NgZone,
@@ -37,33 +37,42 @@ export class StrictedAreaChartComponent extends AbstractCleanableComponent imple
 
   ngOnInit() {
     this.zone.runOutsideAngular(() => {
-      this.initData();
       this.initChart();
     });
   }
 
   onBarnSelection(barn: CowshedData) {
+    this.isBarnBusy$.next(true);
+    console.log('HEEEEYYYYOOO');
     this.selectedBarn = barn;
 
-    this.drawSensors(this.chart)
+    this.drawSensors(this.chart);
+    this.isBarnBusy$.next(false);
   }
 
 
   onTimeSelection(time: Date) {
     console.log(time);
     const chartObservable$ = this.isChartBusy$.asObservable();
-    const dataObservable$ = this.isDataBusy$.asObservable();
+    const barnObservable$ = this.isBarnBusy$.asObservable();
 
     this.addSubscription(
       chartObservable$.pipe(
         mergeMap((isChartBusy) => {
-          return dataObservable$.pipe(
-            filter((isDaTaBusy) => !isDaTaBusy && !isChartBusy)
+          return barnObservable$.pipe(
+            filter((isBarnBusy) => !isBarnBusy && !isChartBusy)
           );
-        })
+        }),
+        first()
       ).subscribe(() => {
-        this.chart.data = this.strictedPositionService.parseData(this.data, time, 10, true);
-        this.drawSensors(this.chart);
+        const idCowShed = this.selectedBarn.cowshedId;
+        this.strictedPositionService.getFirstAlgorithmForSelectedTime(idCowShed, time).pipe(
+          filter(exists),
+          first()
+        ).subscribe((data) => {
+          this.chart.data = data;
+          this.drawSensors(this.chart);
+        });
       })
     );
   }
@@ -75,17 +84,6 @@ export class StrictedAreaChartComponent extends AbstractCleanableComponent imple
         this.chart.dispose();
       }
     });
-  }
-
-  private initData() {
-    // addSubscription jest czescia AbstractCleaneble;
-    // komponent ten pozwala na zarzadzanie subskrypcjami i sam niszczy posiadane subskrypcje
-    this.addSubscription(
-      this.strictedPositionService.getCows().subscribe(cowList => {
-        this.data = cowList;
-        this.isDataBusy$.next(false);
-      })
-    );
   }
 
   private initChart() {
@@ -133,18 +131,18 @@ export class StrictedAreaChartComponent extends AbstractCleanableComponent imple
     this.chart = chart;
     this.isChartBusy$.next(false);
 
-    this.sensorImages = []
+    this.sensorImages = [];
   }
 
   private drawSensors(chart: am4charts.XYChart) {
-    console.log("Drawing sensors for barn " + this.selectedBarn.cowshedId + " | width:" + this.selectedBarn.width + " height:" + this.selectedBarn.height);
-    
+    console.log('Drawing sensors for barn ' + this.selectedBarn.cowshedId + ' | width:' + this.selectedBarn.width + ' height:' + this.selectedBarn.height);
+
     for (const im of this.sensorImages) {
       im.dispose();
     }
 
     const sensors = this.selectedBarn.wallpoints;
-    const barnHeight = this.selectedBarn.height; 
+    const barnHeight = this.selectedBarn.height;
     const barnWidth = this.selectedBarn.width;
 
     // data needs to already exist
@@ -156,7 +154,7 @@ export class StrictedAreaChartComponent extends AbstractCleanableComponent imple
       return;
     }
 
-    
+
     for (const s of sensors) {
       const sensor = new am4core.Image();
       sensor.href = 'assets/img/sensor_icon.svg';
