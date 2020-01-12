@@ -9,7 +9,7 @@ export const chartsRoutes: Routes = [
     component: SelectedCowChartComponent,
   },
   {
-    path: 'stricted-area-chart',
+    path: 'stricted-area-chart/:path',
     component: StrictedAreaChartComponent,
   },
   {

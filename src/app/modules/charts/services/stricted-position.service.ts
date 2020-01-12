@@ -30,8 +30,7 @@ export class StrictedPositionService {
     );
   }
 
-  getFirstAlgorithmForSelectedTime(idCowShed: number, selectedDate: Date): Observable<Array<CowshedSection>> {
-    const path = 'firstAlgorithm';
+  getFirstOrThirdAlgorithmForSelectedTime(idCowShed: number, selectedDate: Date, path: string): Observable<Array<CowshedSection>> {
     const urlParams = {idCowShed};
     const url = this.ulrService.getUrl(path, urlParams);
 

@@ -1,4 +1,4 @@
-import { Component, OnInit, NgZone, OnDestroy } from '@angular/core';
+import { Component, OnInit, NgZone, OnDestroy, Input } from '@angular/core';
 
 import * as am4core from '@amcharts/amcharts4/core';
 import * as am4charts from '@amcharts/amcharts4/charts';
@@ -14,12 +14,15 @@ import { AbstractCleanableComponent } from '../../../../base/components/abstract
 import { BehaviorSubject, forkJoin, of } from 'rxjs';
 import { filter, first, mergeMap, tap } from 'rxjs/operators';
 import { exists } from '../../../../base/operators/exists';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'cows-stricted-area-chart',
   templateUrl: './stricted-area-chart.component.html'
 })
 export class StrictedAreaChartComponent extends AbstractCleanableComponent implements OnInit, OnDestroy {
+  path: string;
+
   private chart: am4charts.XYChart;
   private sensorImages: Array<am4core.Image>;
 
@@ -32,9 +35,15 @@ export class StrictedAreaChartComponent extends AbstractCleanableComponent imple
   private alreadyDrawn = false;
 
   constructor(private zone: NgZone,
+              private router: ActivatedRoute,
               private strictedPositionService: StrictedPositionService) { super(); }
 
   ngOnInit() {
+    this.addSubscription(
+      this.router.params.subscribe(
+        (params) => this.path = params['path']
+      )
+    );
     this.zone.runOutsideAngular(() => {
       this.initChart();
     });
@@ -43,10 +52,10 @@ export class StrictedAreaChartComponent extends AbstractCleanableComponent imple
   onDataSelection(selectedData: CowshedDataAtTime) {
     this.isBarnBusy$.next(true);
     this.selectedBarn = selectedData.cowshed;
-    this.isBarnBusy$.next(false)
-    
+    this.isBarnBusy$.next(false);
+
     const time: Date = selectedData.timestamp;
-    
+
     console.log("Chart - selected barn " + this.selectedBarn.cowshedId + " with time " + time.toISOString());
     const chartObservable$ = this.isChartBusy$.asObservable();
     const barnObservable$ = this.isBarnBusy$.asObservable();
@@ -61,7 +70,7 @@ export class StrictedAreaChartComponent extends AbstractCleanableComponent imple
         first()
       ).subscribe(() => {
         const idCowShed = this.selectedBarn.cowshedId;
-        this.strictedPositionService.getFirstAlgorithmForSelectedTime(idCowShed, time).pipe(
+        this.strictedPositionService.getFirstOrThirdAlgorithmForSelectedTime(idCowShed, time, this.path).pipe(
           filter(exists),
           first()
         ).subscribe((data) => {
@@ -125,12 +134,12 @@ export class StrictedAreaChartComponent extends AbstractCleanableComponent imple
 
     columnTemplate.column.adapter.add("fill", function(fill, target) {
       if (target.dataItem) {
-	console.log("Color debug")
-	console.log(target.dataItem)
-	const val: number = target.dataItem.values.value.value;
-	const change: number = (Math.floor(val/10) * 10) / 100
-	
-	return am4core.color(chart.colors.getIndex(0)).lighten(-change).brighten(-change);
+        console.log('Color debug');
+        console.log(target.dataItem);
+        const val: number = target.dataItem.values.value.value;
+        const change: number = (Math.floor(val/10) * 10) / 100;
+
+	      return am4core.color(chart.colors.getIndex(0)).lighten(-change).brighten(-change);
       }
       return fill;
     });
