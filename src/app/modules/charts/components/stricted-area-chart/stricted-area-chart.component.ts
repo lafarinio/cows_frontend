@@ -147,12 +147,21 @@ export class StrictedAreaChartComponent extends AbstractCleanableComponent imple
 
     columnTemplate.column.adapter.add("fill", function(fill, target) {
       if (target.dataItem) {
-        console.log('Color debug');
-        console.log(target.dataItem);
         const val: number = target.dataItem.values.value.value;
-        const change: number = (Math.floor(val/10) * 10) / 100;
 
-        return am4core.color(chart.colors.getIndex(0)).lighten(-change).brighten(-change);
+	if (val == 0) {
+	  return am4core.color("white")
+	}
+        
+
+	if (val < 15) {
+	  const change: number = val / 50;
+          return am4core.color(chart.colors.getIndex(0)).lighten(-change).brighten(-change);
+	}
+	else {
+	  const change: number = (Math.floor(val/10) * 10) / 100;
+	  return am4core.color(chart.colors.getIndex(0)).lighten(-change).brighten(-change);
+	}
       }
       return fill;
     });
