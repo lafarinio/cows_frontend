@@ -4,6 +4,7 @@ import { first } from 'rxjs/operators';
 import { Deserialize } from 'cerialize';
 
 import { CowshedData, CowshedTimeRange } from '../charts/models/CowshedData.model';
+import { UrlService } from '../../base/services/url.service';
 
 
 @Component({
@@ -17,11 +18,13 @@ export class BarnSelectorComponent implements OnInit, AfterViewInit {
   barnSelectedEventEmitter = new EventEmitter<CowshedData>();
 
   barnData: any; //Observable<Array<CowshedData>>
-  
-  constructor(private http: HttpClient) { }
+
+  constructor(private urlService: UrlService,
+              private http: HttpClient) { }
 
   ngOnInit() {
-    const restUrl = "http://10.0.0.11:8080/cowShed/getAll"
+    const path = 'getCowSheds';
+    const restUrl = this.urlService.getUrl(path);
 
     this.barnData = this.http.get(restUrl);
 
@@ -31,7 +34,7 @@ export class BarnSelectorComponent implements OnInit, AfterViewInit {
   ngAfterViewInit() {
   }
 
- 
+
   emitBarnId(id: number) {
     this.barnData.pipe(first()).subscribe(data => {
       const selectedBarnData: CowshedData = Deserialize(data[id], CowshedData);
