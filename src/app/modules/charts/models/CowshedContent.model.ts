@@ -2,7 +2,7 @@ import { serialize, deserialize, serializeAs, deserializeAs, inheritSerializatio
 
 export class CowshedSection {
   @deserializeAs('cowsCount') numOfCows: number;
-  @deserializeAs('cowsId') cows: string;
+  @deserializeAs('cowsId') cows: string[];
 
   @deserialize posX: number;
   @deserialize posY: number;
