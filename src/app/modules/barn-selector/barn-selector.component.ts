@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { first } from 'rxjs/operators';
 import { Deserialize } from 'cerialize';
 
-import { CowshedData } from '../charts/models/CowshedData.model';
+import { CowshedData, CowshedTimeRange } from '../charts/models/CowshedData.model';
 
 
 @Component({
@@ -34,8 +34,8 @@ export class BarnSelectorComponent implements OnInit, AfterViewInit {
  
   emitBarnId(id: number) {
     this.barnData.pipe(first()).subscribe(data => {
-      const barnData: CowshedData = Deserialize(data[id], CowshedData);
-      this.barnSelectedEventEmitter.emit(barnData);
+      const selectedBarnData: CowshedData = Deserialize(data[id], CowshedData);
+      this.barnSelectedEventEmitter.emit(selectedBarnData);
     });
   }
 

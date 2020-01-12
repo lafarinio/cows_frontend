@@ -1,5 +1,7 @@
 import { Component, EventEmitter, OnInit, Output, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 
+import { CowshedData, CowshedDataAtTime, CowshedTimeRange } from '../charts/models/CowshedData.model'
+
 import Pikaday from 'pikaday';
 
 @Component({
@@ -9,6 +11,8 @@ import Pikaday from 'pikaday';
 })
 export class TimeSelectorComponent implements OnInit, AfterViewInit {
   selectedTime = ' / / / ';
+  selectedBarn: CowshedData; 
+  
   calendar: Pikaday;
 
   @ViewChild('minuteSlider', {static: false}) minuteSlider: ElementRef;
@@ -16,7 +20,7 @@ export class TimeSelectorComponent implements OnInit, AfterViewInit {
   @ViewChild('calendar', {static: false}) datepicker: ElementRef;
 
   @Output()
-  timeEventEmitter = new EventEmitter<Date>();
+  selectedDataEventEmitter = new EventEmitter<CowshedDataAtTime>();
 
   constructor() { }
 
@@ -31,10 +35,33 @@ export class TimeSelectorComponent implements OnInit, AfterViewInit {
 	self.onCalendarChange();
       }
     });
-    this.calendar.setDate(new Date(Date.UTC(2020, 0, 12))); // get this from db
-    this.calendar.setMinDate(new Date(Date.UTC(2020, 0, 11)));
-    this.calendar.setMaxDate(new Date(Date.UTC(2020, 0, 13)));
+  }
 
+  onBarnSelection(barn: CowshedData) {
+    this.selectedBarn = barn;
+    
+    console.log("Time selector - barn " + barn.cowshedId);
+    console.log(barn);
+
+    const s: Date = new Date(barn.dataTimeRange.timestampStart)
+    const e: Date = new Date(barn.dataTimeRange.timestampEnd)
+    this.setupTimeSelectors(s, e);
+  }
+
+  setupTimeSelectors(startTime: Date, endTime: Date) {
+    // workaround to js weird reference issues
+    this.hoursSlider.nativeElement.value = 0;
+    this.hoursSlider.nativeElement.value += endTime.getHours();
+
+    // workaround to js weird reference issues
+    this.minuteSlider.nativeElement.value = 0;
+    this.minuteSlider.nativeElement.value += endTime.getMinutes();
+
+    this.calendar.setMinDate(startTime);
+    this.calendar.setMaxDate(endTime);
+    
+    this.calendar.setDate(endTime);
+    
     this.emitInitialTime();
   }
 
@@ -44,8 +71,12 @@ export class TimeSelectorComponent implements OnInit, AfterViewInit {
     this.onCalendarChange();
   }
 
-  emitTime(time: Date) {
-    this.timeEventEmitter.emit(time);
+  emitSelectedData(time: Date) {
+    const selectedData: CowshedDataAtTime = new CowshedDataAtTime(this.selectedBarn, time);
+    
+    this.selectedDataEventEmitter.emit(selectedData);
+
+    console.log("Sent barn " + selectedData.cowshed.cowshedId + " data and time " + selectedData.timestamp.toISOString())
   }
 
   updateLabel(time: Date) {
@@ -53,7 +84,6 @@ export class TimeSelectorComponent implements OnInit, AfterViewInit {
   }
 
   getDateFromInputs(): Date {
-    //const date = new Date(Date.UTC(2019, 10, 11, 8, 10));
     const date = this.calendar.getDate();
 
     date.setMinutes(this.minuteSlider.nativeElement.value);
@@ -65,7 +95,8 @@ export class TimeSelectorComponent implements OnInit, AfterViewInit {
   onCalendarChange() {
     const date = this.getDateFromInputs();
     this.updateLabel(date);
-    this.emitTime(date);
+    
+    this.emitSelectedData(date);
   }
 
   onSliderChange() {
@@ -77,7 +108,7 @@ export class TimeSelectorComponent implements OnInit, AfterViewInit {
   onSliderChangeEnd() {
     const date = this.getDateFromInputs();
 
-    this.emitTime(date);
+    this.emitSelectedData(date);
   }
 
   isTimelapseRunning = false;
@@ -88,7 +119,7 @@ export class TimeSelectorComponent implements OnInit, AfterViewInit {
       console.log('Starting timelapse.');
       this.isTimelapseRunning = true;
 
-      this.timelapseTimer = setInterval(() => { this.handleTimelapseIntervalExpiry(); }, 1500);
+      this.timelapseTimer = setInterval(() => { this.handleTimelapseIntervalExpiry(); }, 2500);
     } else {
       this.clearTimelapse();
     }

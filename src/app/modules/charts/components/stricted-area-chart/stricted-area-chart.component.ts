@@ -8,8 +8,7 @@ import { CowShedSide, PositionNames } from '../../models/position.model';
 import { StrictedAreaPosition } from '../../models/srticted-area-position.model';
 import { StrictedPositionService } from '../../services/stricted-position.service';
 
-import { CowshedData } from '../../models/CowshedData.model';
-
+import { CowshedData, CowshedDataAtTime } from '../../models/CowshedData.model';
 
 import { AbstractCleanableComponent } from '../../../../base/components/abstract-cleanable/abstract-cleanable.component';
 import { BehaviorSubject, forkJoin, of } from 'rxjs';
@@ -41,18 +40,14 @@ export class StrictedAreaChartComponent extends AbstractCleanableComponent imple
     });
   }
 
-  onBarnSelection(barn: CowshedData) {
+  onDataSelection(selectedData: CowshedDataAtTime) {
     this.isBarnBusy$.next(true);
-    console.log('HEEEEYYYYOOO');
-    this.selectedBarn = barn;
-
-    this.drawSensors(this.chart);
-    this.isBarnBusy$.next(false);
-  }
-
-
-  onTimeSelection(time: Date) {
-    console.log(time);
+    this.selectedBarn = selectedData.cowshed;
+    this.isBarnBusy$.next(false)
+    
+    const time: Date = selectedData.timestamp;
+    
+    console.log("Chart - selected barn " + this.selectedBarn.cowshedId + " with time " + time.toISOString());
     const chartObservable$ = this.isChartBusy$.asObservable();
     const barnObservable$ = this.isBarnBusy$.asObservable();
 

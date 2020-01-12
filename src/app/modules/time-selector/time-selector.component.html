@@ -10,4 +10,6 @@
       <input id="timelapseButton" type="button" (click)='timelapseButtonPressed()' value="Timelapse" />
     </div>
   </div>
+
+  <barn-selector (barnSelectedEventEmitter)='onBarnSelection($event)'></barn-selector>
 </div>

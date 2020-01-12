@@ -5,9 +5,9 @@ export class WallpointData {
   @deserialize position_y: number;
 }
 
-export class TimeRange {
-  @deserializeAs(Date) timestampStart: Date;
-  @deserializeAs(Date) timestampEnd: Date;
+export class CowshedTimeRange {
+  @deserialize timestampStart: string;
+  @deserialize timestampEnd: string;
 }
 
 export class CowshedData {
@@ -19,5 +19,17 @@ export class CowshedData {
 
   @deserializeAs(WallpointData, 'wallpointDtos') wallpoints: Array<WallpointData>;
 
-  @deserializeAs(TimeRange, 'cowShedTimestampsDto') dataTimeRange: TimeRange;
+  @deserializeAs(CowshedTimeRange, 'cowShedTimestampsDto') dataTimeRange: CowshedTimeRange;
+}
+
+export class CowshedDataAtTime {
+  cowshed: CowshedData;
+
+  timestamp: Date;
+
+  constructor(c: CowshedData, t: Date)
+  {
+    this.cowshed = c;
+    this.timestamp = t;
+  }
 }
