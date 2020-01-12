@@ -44,7 +44,9 @@ export class StrictedAreaChartComponent extends AbstractCleanableComponent imple
       this.router.params.subscribe(
         (params) => {
           this.path = params['path'];
-          // this.updateChart();
+          if (exists(this.chart)) {
+            this.updateChart2();
+          }
         }
       )
     );
@@ -76,16 +78,20 @@ export class StrictedAreaChartComponent extends AbstractCleanableComponent imple
         }),
         first()
       ).subscribe(() => {
-        const idCowShed = this.selectedBarn.cowshedId;
-        this.strictedPositionService.getFirstOrThirdAlgorithmForSelectedTime(idCowShed, this.selectedTime, this.path).pipe(
-          filter(exists),
-          first()
-        ).subscribe((data) => {
-          this.chart.data = data;
-          this.drawSensors(this.chart);
-        });
+        this.updateChart2();
       })
     );
+  }
+
+  updateChart2() {
+    const idCowShed = this.selectedBarn.cowshedId;
+    this.strictedPositionService.getFirstOrThirdAlgorithmForSelectedTime(idCowShed, this.selectedTime, this.path).pipe(
+      filter(exists),
+      first()
+    ).subscribe((data) => {
+      this.chart.data = data;
+      this.drawSensors(this.chart);
+    });
   }
 
   ngOnDestroy() {
