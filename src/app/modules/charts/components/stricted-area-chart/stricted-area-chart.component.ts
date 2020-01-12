@@ -31,6 +31,7 @@ export class StrictedAreaChartComponent extends AbstractCleanableComponent imple
 
   data: Array<StrictedCowPosition> = [];
   private selectedBarn: CowshedData;
+  private selectedTime: Date;
 
   private alreadyDrawn = false;
 
@@ -41,7 +42,10 @@ export class StrictedAreaChartComponent extends AbstractCleanableComponent imple
   ngOnInit() {
     this.addSubscription(
       this.router.params.subscribe(
-        (params) => this.path = params['path']
+        (params) => {
+          this.path = params['path'];
+          // this.updateChart();
+        }
       )
     );
     this.zone.runOutsideAngular(() => {
@@ -54,9 +58,12 @@ export class StrictedAreaChartComponent extends AbstractCleanableComponent imple
     this.selectedBarn = selectedData.cowshed;
     this.isBarnBusy$.next(false);
 
-    const time: Date = selectedData.timestamp;
+    this.selectedTime = selectedData.timestamp;
+    this.updateChart();
+  }
 
-    console.log("Chart - selected barn " + this.selectedBarn.cowshedId + " with time " + time.toISOString());
+  updateChart() {
+    console.log("Chart - selected barn " + this.selectedBarn.cowshedId + " with time " + this.selectedTime.toISOString());
     const chartObservable$ = this.isChartBusy$.asObservable();
     const barnObservable$ = this.isBarnBusy$.asObservable();
 
@@ -70,7 +77,7 @@ export class StrictedAreaChartComponent extends AbstractCleanableComponent imple
         first()
       ).subscribe(() => {
         const idCowShed = this.selectedBarn.cowshedId;
-        this.strictedPositionService.getFirstOrThirdAlgorithmForSelectedTime(idCowShed, time, this.path).pipe(
+        this.strictedPositionService.getFirstOrThirdAlgorithmForSelectedTime(idCowShed, this.selectedTime, this.path).pipe(
           filter(exists),
           first()
         ).subscribe((data) => {
@@ -139,7 +146,7 @@ export class StrictedAreaChartComponent extends AbstractCleanableComponent imple
         const val: number = target.dataItem.values.value.value;
         const change: number = (Math.floor(val/10) * 10) / 100;
 
-	      return am4core.color(chart.colors.getIndex(0)).lighten(-change).brighten(-change);
+        return am4core.color(chart.colors.getIndex(0)).lighten(-change).brighten(-change);
       }
       return fill;
     });
