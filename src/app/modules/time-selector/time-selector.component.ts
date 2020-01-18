@@ -67,8 +67,8 @@ export class TimeSelectorComponent implements OnInit, AfterViewInit {
 
   private emitInitialTime() {
     this.onSliderChange();
-    this.onSliderChangeEnd();
-    this.onCalendarChange();
+    this.onSliderChangeEnd(false);
+    this.onCalendarChange(true);
   }
 
   emitSelectedData(time: Date) {
@@ -92,11 +92,13 @@ export class TimeSelectorComponent implements OnInit, AfterViewInit {
     return date;
   }
 
-  onCalendarChange() {
+  onCalendarChange(shouldEmit: boolean = true) {
     const date = this.getDateFromInputs();
     this.updateLabel(date);
-    
-    this.emitSelectedData(date);
+
+    if (shouldEmit == true) {
+      this.emitSelectedData(date);
+    }
   }
 
   onSliderChange() {
@@ -105,10 +107,12 @@ export class TimeSelectorComponent implements OnInit, AfterViewInit {
     this.updateLabel(date);
   }
 
-  onSliderChangeEnd() {
+  onSliderChangeEnd(shouldEmit: boolean = true) {
     const date = this.getDateFromInputs();
 
-    this.emitSelectedData(date);
+    if (shouldEmit == true) {
+      this.emitSelectedData(date);
+    }
   }
 
   isTimelapseRunning = false;
