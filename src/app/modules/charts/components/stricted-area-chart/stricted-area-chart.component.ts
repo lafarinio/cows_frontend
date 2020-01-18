@@ -125,6 +125,7 @@ export class StrictedAreaChartComponent extends AbstractCleanableComponent imple
     series.dataFields.categoryX = PositionNames.posX;
     series.dataFields.categoryY = PositionNames.posY;
     series.dataFields.value = PositionNames.value;
+    series.dataFields.id = PositionNames.whatCows;
     series.sequencedInterpolation = true;
     series.defaultState.transitionDuration = 3000;
 
@@ -134,7 +135,8 @@ export class StrictedAreaChartComponent extends AbstractCleanableComponent imple
     columnTemplate.strokeWidth = 1;
     columnTemplate.strokeOpacity = 0.2;
     columnTemplate.stroke = bgColor;
-    columnTemplate.tooltipText = `{${PositionNames.posY}}{${PositionNames.posX}} : {value.workingValue.formatNumber("#.")} cows`;
+    columnTemplate.tooltipText = `{${PositionNames.posY}}{${PositionNames.posX}} : {value.workingValue.formatNumber("#.")} cows\n
+Cows in this section: {id}`;
     columnTemplate.width = am4core.percent(100);
     columnTemplate.height = am4core.percent(100);
 
