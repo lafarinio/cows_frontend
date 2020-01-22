@@ -151,19 +151,18 @@ Cows in this section: {id}`;
       if (target.dataItem) {
         const val: number = target.dataItem.values.value.value;
 
-	if (val == 0) {
-	  return am4core.color("white")
-	}
-        
+        if (val == 0) {
+          return am4core.color("white")
+        }
 
-	if (val < 15) {
-	  const change: number = val / 50;
+
+        if (val < 15) {
+          const change: number = val / 50;
           return am4core.color(chart.colors.getIndex(0)).lighten(-change).brighten(-change);
-	}
-	else {
-	  const change: number = (Math.floor(val/10) * 10) / 100;
-	  return am4core.color(chart.colors.getIndex(0)).lighten(-change).brighten(-change);
-	}
+        } else {
+          const change: number = (Math.floor(val / 10) * 10) / 100;
+          return am4core.color(chart.colors.getIndex(0)).lighten(-change).brighten(-change);
+        }
       }
       return fill;
     });

@@ -6,12 +6,14 @@ import am4themes_material from '@amcharts/amcharts4/themes/material';
 import { PositionNames } from '../../models/position.model';
 import { WorkpointAreaPosition } from '../../models/workpoint-area-position.model';
 import { UrlService } from '../../../../base/services/url.service';
-import { CowshedData } from "../../models/CowshedData.model";
+import { CowshedData, CowshedDataAtTime } from '../../models/CowshedData.model';
+import { WorkpointAreaService } from '../../services/workpoint-area.service';
+import { WallpointLocation } from '../../models/WallpointLocation.model';
 
 
 
-const barnWidth = 30;
-const barnHeight = 20;
+const barnWidth = 300;
+const barnHeight = 170;
 
 
 @Component({
@@ -20,22 +22,15 @@ const barnHeight = 20;
 })
 export class WorkPointsChartComponent implements OnInit, OnDestroy {
   private chart: am4charts.XYChart;
-  private data: Array<any>;
+  private data: Array<WallpointLocation>;
   private sensors: any;
   private selectedBarn: CowshedData;
+  private selectedTime: Date;
+
   private contentHeight = 428.67;
   private contentWidth = 742;
   constructor(private zone: NgZone,
-              private urlService: UrlService) {
-  }
-
-  onBarnSelection(barnId: number) {
-    console.log('Selected barn ' + barnId);
-  }
-
-
-  onTimeSelection(time: Date) {
-    console.log(time);
+              private workpointsService: WorkpointAreaService) {
   }
 
   ngOnInit() {
@@ -43,12 +38,17 @@ export class WorkPointsChartComponent implements OnInit, OnDestroy {
       this.initializeChart();
 
       this.initializeData();
-      this.chart.data = this.data;
 
       this.initializeSensors();
       this.drawSensors();
 
     });
+  }
+
+  onDataSelection($event: CowshedDataAtTime) {
+    this.selectedBarn = $event.cowshed;
+    this.selectedTime = $event.timestamp;
+    console.log($event);
   }
 
   private initializeChart() {
@@ -113,6 +113,18 @@ export class WorkPointsChartComponent implements OnInit, OnDestroy {
     });
   }
 
+  private updateAxes() {    // Create axes
+    const xAxis = this.chart.xAxes.push(new am4charts.ValueAxis());
+    xAxis.renderer.minGridDistance = 50;
+    xAxis.min = 0;
+    xAxis.max = barnWidth;
+
+    const yAxis = this.chart.yAxes.push(new am4charts.ValueAxis());
+    yAxis.renderer.minGridDistance = 50;
+    yAxis.min = 0;
+    yAxis.max = barnHeight;
+  }
+
   private drawSensors() {
     for (const pos of this.sensors) {
       const sensor = new am4core.Image();
@@ -131,45 +143,51 @@ export class WorkPointsChartComponent implements OnInit, OnDestroy {
   }
 
   private initializeData() {
+    this.workpointsService.getSecondAlgorithmForSelectedTime(1, new Date('2020-01-22T15:40:00.000Z'))
+      .subscribe((data: WallpointLocation[]) => {
+        this.data = data;
+        this.chart.data = this.data;
+      });
 
-    this.data = [
-      {
-        // from lower left corner
-        posX: 0,
-        posY: 10,
-        wallpointWidth: 20,
-        wallpointHeight: 10,
-        cowsCount: 1,
-      },
-      {
-        posX: 0,
-        posY: 20,
-        wallpointWidth: 10,
-        wallpointHeight: 10,
-        cowsCount: 2,
-      },
-      {
-        posX: 10,
-        posY: 20,
-        wallpointWidth: 10,
-        wallpointHeight: 10,
-        cowsCount: 3,
-      },
-      {
-        posX: 20,
-        posY: 20,
-        wallpointWidth: 10,
-        wallpointHeight: 10,
-        cowsCount: 4,
-      },
-      {
-        posX: 20,
-        posY: 10,
-        wallpointWidth: 10,
-        wallpointHeight: 10,
-        cowsCount: 5,
-      }
-    ];
+    // this.data = [
+    //   {
+    //     // from lower left corner
+    //     posX: 0,
+    //     posY: 10,
+    //     wallpointWidth: 20,
+    //     wallpointHeight: 10,
+    //     cowsCount: 1,
+    //   },
+    //   {
+    //     posX: 0,
+    //     posY: 20,
+    //     wallpointWidth: 10,
+    //     wallpointHeight: 10,
+    //     cowsCount: 2,
+    //   },
+    //   {
+    //     posX: 10,
+    //     posY: 20,
+    //     wallpointWidth: 10,
+    //     wallpointHeight: 10,
+    //     cowsCount: 3,
+    //   },
+    //   {
+    //     posX: 20,
+    //     posY: 20,
+    //     wallpointWidth: 10,
+    //     wallpointHeight: 10,
+    //     cowsCount: 4,
+    //   },
+    //   {
+    //     posX: 20,
+    //     posY: 10,
+    //     wallpointWidth: 10,
+    //     wallpointHeight: 10,
+    //     cowsCount: 5,
+    //   }
+    // ];
+    // this.chart.data = this.data;
   }
 
   private initializeSensors() {

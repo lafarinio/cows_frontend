@@ -5,6 +5,7 @@ export const urlsConfiguration = {
   cow: 'cows/:id',
   // nowe
   firstAlgorithm: 'timeLocation/getFirstAlgorithm/:idCowShed',
+  secondAlgorithm: 'timeLocation/getSecondAlgorithm/:idCowShed',
   thirdAlgorithm: 'timeLocation/getThirdAlgorithm/:idCowShed',
   getCowSheds: 'cowShed/getAll',
   getCowShed: 'cowShed/getCowShed/:id',

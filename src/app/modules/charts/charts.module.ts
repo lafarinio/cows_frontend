@@ -7,6 +7,7 @@ import { ModulesModule } from '../modules.module';
 
 import { StrictedPositionService } from './services/stricted-position.service';
 import { CowDataService } from './services/cow-data.service';
+import { WorkpointAreaService } from './services/workpoint-area.service';
 
 
 @NgModule({
@@ -18,6 +19,6 @@ import { CowDataService } from './services/cow-data.service';
     CommonModule,
     ModulesModule
   ],
-  providers: [StrictedPositionService, CowDataService]
+  providers: [StrictedPositionService, CowDataService, WorkpointAreaService]
 })
 export class ChartsModule { }
