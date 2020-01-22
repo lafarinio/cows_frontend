@@ -47,7 +47,6 @@ export class WorkPointsChartComponent implements OnInit, OnDestroy {
     this.initializeData();
     this.initializeSensors();
     this.drawSensors();
-    console.log($event);
   }
 
   private updateContentHeight() {
@@ -142,7 +141,7 @@ export class WorkPointsChartComponent implements OnInit, OnDestroy {
   }
 
   private initializeData() {
-    this.workpointsService.getSecondAlgorithmForSelectedTime(this.selectedBarn.farmId, this.selectedTime)
+    this.workpointsService.getSecondAlgorithmForSelectedTime(this.selectedBarn.cowshedId, this.selectedTime)
       .subscribe((data: WallpointLocation[]) => {
         this.data = data;
         this.chart.data = this.data;
