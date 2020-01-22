@@ -115,12 +115,14 @@ export class WorkPointsChartComponent implements OnInit, OnDestroy {
     xAxis.renderer.minGridDistance = 50;
     xAxis.min = 0;
     xAxis.max = this.selectedBarn.width;
-
+    xAxis.strictMinMax = true;
+    
     const yAxis = this.chart.yAxes.push(new am4charts.ValueAxis());
     yAxis.renderer.minGridDistance = 50;
     yAxis.min = 0;
     yAxis.max = this.selectedBarn.height;
     yAxis.renderer.inversed = true;
+    yAxis.strictMinMax = true;
   }
 
   private drawSensors() {
