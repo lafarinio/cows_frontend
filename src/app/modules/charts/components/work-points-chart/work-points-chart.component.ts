@@ -4,9 +4,7 @@ import * as am4core from '@amcharts/amcharts4/core';
 import * as am4charts from '@amcharts/amcharts4/charts';
 import am4themes_material from '@amcharts/amcharts4/themes/material';
 import { PositionNames } from '../../models/position.model';
-import { WorkpointAreaPosition } from '../../models/workpoint-area-position.model';
-import { UrlService } from '../../../../base/services/url.service';
-import { CowshedData, CowshedDataAtTime } from '../../models/CowshedData.model';
+import { CowshedData, CowshedDataAtTime, WallpointData } from '../../models/CowshedData.model';
 import { WorkpointAreaService } from '../../services/workpoint-area.service';
 import { WallpointLocation } from '../../models/WallpointLocation.model';
 
@@ -23,7 +21,7 @@ const barnHeight = 170;
 export class WorkPointsChartComponent implements OnInit, OnDestroy {
   private chart: am4charts.XYChart;
   private data: Array<WallpointLocation>;
-  private sensors: any;
+  private sensors: Array<WallpointData>;
   private selectedBarn: CowshedData;
   private selectedTime: Date;
 
@@ -35,12 +33,10 @@ export class WorkPointsChartComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.zone.runOutsideAngular(() => {
-      this.initializeChart();
-
-      this.initializeData();
-
-      this.initializeSensors();
-      this.drawSensors();
+      // this.initializeChart();
+      // this.initializeData();
+      // this.initializeSensors();
+      // this.drawSensors();
 
     });
   }
@@ -48,24 +44,23 @@ export class WorkPointsChartComponent implements OnInit, OnDestroy {
   onDataSelection($event: CowshedDataAtTime) {
     this.selectedBarn = $event.cowshed;
     this.selectedTime = $event.timestamp;
+    this.initializeChart();
+    this.initializeData();
+    this.initializeSensors();
+    this.drawSensors();
     console.log($event);
   }
 
   private initializeChart() {
+    if (this.chart) {
+      this.chart.dispose();
+    }
 // Create chart instance
     this.chart = am4core.create('chartdiv', am4charts.XYChart);
     this.chart.colors.step = 3;
 
     // Create axes
-    const xAxis = this.chart.xAxes.push(new am4charts.ValueAxis());
-    xAxis.renderer.minGridDistance = 50;
-    xAxis.min = 0;
-    xAxis.max = barnWidth;
-
-    const yAxis = this.chart.yAxes.push(new am4charts.ValueAxis());
-    yAxis.renderer.minGridDistance = 50;
-    yAxis.min = 0;
-    yAxis.max = barnHeight;
+    this.updateAxes();
 
     const bgColor = new am4core.InterfaceColorSet().getFor('background');
 
@@ -117,12 +112,12 @@ export class WorkPointsChartComponent implements OnInit, OnDestroy {
     const xAxis = this.chart.xAxes.push(new am4charts.ValueAxis());
     xAxis.renderer.minGridDistance = 50;
     xAxis.min = 0;
-    xAxis.max = barnWidth;
+    xAxis.max = this.selectedBarn.width;
 
     const yAxis = this.chart.yAxes.push(new am4charts.ValueAxis());
     yAxis.renderer.minGridDistance = 50;
     yAxis.min = 0;
-    yAxis.max = barnHeight;
+    yAxis.max = this.selectedBarn.height;
   }
 
   private drawSensors() {
@@ -132,7 +127,7 @@ export class WorkPointsChartComponent implements OnInit, OnDestroy {
       sensor.valign = 'top';
       sensor.align = 'right';
 
-      const coords = this.barnCoordToChartCoord(barnWidth, barnHeight, this.contentWidth, this.contentHeight, pos.sensorX, pos.sensorY);
+      const coords = this.barnCoordToChartCoord(barnWidth, barnHeight, this.contentWidth, this.contentHeight, pos.position_x, pos.position_y);
       sensor.marginRight = coords[0] - (sensor.innerWidth / 4);
       sensor.marginTop = coords[1] - (sensor.innerHeight / 4);
 
@@ -143,76 +138,15 @@ export class WorkPointsChartComponent implements OnInit, OnDestroy {
   }
 
   private initializeData() {
-    this.workpointsService.getSecondAlgorithmForSelectedTime(1, new Date('2020-01-22T15:40:00.000Z'))
+    this.workpointsService.getSecondAlgorithmForSelectedTime(this.selectedBarn.farmId, this.selectedTime)
       .subscribe((data: WallpointLocation[]) => {
         this.data = data;
         this.chart.data = this.data;
       });
-
-    // this.data = [
-    //   {
-    //     // from lower left corner
-    //     posX: 0,
-    //     posY: 10,
-    //     wallpointWidth: 20,
-    //     wallpointHeight: 10,
-    //     cowsCount: 1,
-    //   },
-    //   {
-    //     posX: 0,
-    //     posY: 20,
-    //     wallpointWidth: 10,
-    //     wallpointHeight: 10,
-    //     cowsCount: 2,
-    //   },
-    //   {
-    //     posX: 10,
-    //     posY: 20,
-    //     wallpointWidth: 10,
-    //     wallpointHeight: 10,
-    //     cowsCount: 3,
-    //   },
-    //   {
-    //     posX: 20,
-    //     posY: 20,
-    //     wallpointWidth: 10,
-    //     wallpointHeight: 10,
-    //     cowsCount: 4,
-    //   },
-    //   {
-    //     posX: 20,
-    //     posY: 10,
-    //     wallpointWidth: 10,
-    //     wallpointHeight: 10,
-    //     cowsCount: 5,
-    //   }
-    // ];
-    // this.chart.data = this.data;
   }
 
   private initializeSensors() {
-    this.sensors = [
-      {
-        sensorX: 0,
-        sensorY: 10
-      },
-      {
-        sensorX: 0,
-        sensorY: 20
-      },
-      {
-        sensorX: 10,
-        sensorY: 20
-      },
-      {
-        sensorX: 20,
-        sensorY: 20
-      },
-      {
-        sensorX: 30,
-        sensorY: 20
-      }
-    ];
+    this.sensors = this.selectedBarn.wallpoints;
   }
 
   ngOnDestroy() {
