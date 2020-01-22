@@ -75,7 +75,7 @@ export class WorkPointsChartComponent implements OnInit, OnDestroy {
     series.name = 'Series 1';
 
     const bullet = series.bullets.push(new am4core.Rectangle());
-    bullet.tooltipText = `X{${PositionNames.posY}} Y{${PositionNames.posX}} : {value.workingValue.formatNumber("#.")} cows`;
+    bullet.tooltipText = `X{${PositionNames.posX}} Y{${PositionNames.posY}} : {value.workingValue.formatNumber("#.")} cows`;
 
     bullet.width = 10;
     bullet.height = 10;
