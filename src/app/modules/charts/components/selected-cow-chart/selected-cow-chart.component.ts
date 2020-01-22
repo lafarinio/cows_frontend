@@ -1,16 +1,13 @@
-import { Component, OnInit, OnDestroy, NgZone, Input } from '@angular/core';
+import { Component, OnInit, OnDestroy, NgZone } from '@angular/core';
 
 import * as am4core from '@amcharts/amcharts4/core';
 import * as am4charts from '@amcharts/amcharts4/charts';
-import am4themes_material from '@amcharts/amcharts4/themes/material';
-import { StrictedCowPosition } from '../../models/stricted-cow-position.model';
-import { CowShedSide, PositionNames } from '../../models/position.model';
-import { StrictedAreaPosition } from '../../models/srticted-area-position.model';
+import { PositionNames } from '../../models/position.model';
 import { StrictedPositionService } from '../../services/stricted-position.service';
 
 import { CowshedData, CowshedDataAtTime } from '../../models/CowshedData.model';
 
-import { filter, first, mergeMap, tap } from 'rxjs/operators';
+import { filter, first } from 'rxjs/operators';
 import { exists } from '../../../../base/operators/exists';
 
 @Component({
@@ -24,14 +21,15 @@ export class SelectedCowChartComponent implements OnInit, OnDestroy {
 
   private selectedCowId: number;
   private largeRangeData: any;
-  
+
   private selectedBarn: CowshedData;
   private selectedTime: Date;
 
   cows: Array<number>;
-  
+
   constructor(private zone: NgZone,
-	      private strictedPositionService: StrictedPositionService) { }
+              private strictedPositionService: StrictedPositionService) {
+  }
 
   ngOnInit() {
     this.zone.runOutsideAngular(() => {
@@ -42,11 +40,11 @@ export class SelectedCowChartComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.zone.runOutsideAngular(() => {
       if (this.chart) {
-	this.chart.dispose();
+        this.chart.dispose();
       }
     });
 
-    this.cows = []
+    this.cows = [];
   }
 
   onDataSelection(selectedData: CowshedDataAtTime) {
@@ -57,28 +55,27 @@ export class SelectedCowChartComponent implements OnInit, OnDestroy {
   }
 
   private parseSelectedCow(cowId: number, data: any, maxMinutes: number) {
-    let baseBarnLayout = data[0];
+    const baseBarnLayout = data[0];
 
-    let cowPositions = []
-    
+    const cowPositions = [];
+
     // finding the cow in data
     for (let i: number = maxMinutes - 1; i >= 0; i--) {
       const sections = data[i];
       for (let j: number = 0; j < sections.length; j++) {
-	if (sections[j].cows.includes(cowId))
-	{
-	  cowPositions.push({minusTime: i, idx: j})
-	}
+        if (sections[j].cows.includes(cowId)) {
+          cowPositions.push({minusTime: i, idx: j});
+        }
       }
     }
 
     // filling displayable data with the cow
-    for (let section of baseBarnLayout) {
+    for (const section of baseBarnLayout) {
       section.numOfCows = 0;
     }
 
-    for (let pos of cowPositions) {
-      baseBarnLayout[pos.idx].numOfCows = pos.minusTime + 1; 
+    for (const pos of cowPositions) {
+      baseBarnLayout[pos.idx].numOfCows = pos.minusTime + 1;
     }
 
     return baseBarnLayout;
@@ -92,53 +89,53 @@ export class SelectedCowChartComponent implements OnInit, OnDestroy {
   }
 
   updateChart() {
-    console.log("Chart - selected barn " + this.selectedBarn.cowshedId + " with time " + this.selectedTime.toISOString());
+    console.log('Chart - selected barn ' + this.selectedBarn.cowshedId + ' with time ' + this.selectedTime.toISOString());
     const idCowShed = this.selectedBarn.cowshedId;
 
     const minutesToParse: number = 4; // change in two places
 
-    this.largeRangeData = []
+    this.largeRangeData = [];
 
     this.selectedCowId = 5;
-    this.cows = []
+    this.cows = [];
 
-    this.strictedPositionService.getFirstOrThirdAlgorithmForSelectedTime(idCowShed, this.selectedTime, "thirdAlgorithm").pipe(
+    this.strictedPositionService.getFirstOrThirdAlgorithmForSelectedTime(idCowShed, this.selectedTime, 'thirdAlgorithm').pipe(
       filter(exists),
       first()
-    ).subscribe((data) => {  
+    ).subscribe((data) => {
       this.largeRangeData[0] = data;
 
-      for (var section of data) {
-	this.cows = this.cows.concat(section.cows)
+      for (const section of data) {
+        this.cows = this.cows.concat(section.cows);
       }
       this.cows = [...this.cows];
-      this.selectedCowId = this.cows[0]
+      this.selectedCowId = this.cows[0];
     });
-    
-    for(let i: number = 1; i < minutesToParse-1; i++) {
+
+    for (let i: number = 1; i < minutesToParse - 1; i++) {
       const timeToSearch: Date = new Date(this.selectedTime.getTime() - (i * 60000));
-      this.strictedPositionService.getFirstOrThirdAlgorithmForSelectedTime(idCowShed, timeToSearch, "thirdAlgorithm").pipe(
-	filter(exists),
-	first()
+      this.strictedPositionService.getFirstOrThirdAlgorithmForSelectedTime(idCowShed, timeToSearch, 'thirdAlgorithm').pipe(
+        filter(exists),
+        first()
       ).subscribe((data) => {
-	this.largeRangeData[i] = data;
+        this.largeRangeData[i] = data;
       });
     }
 
     // really hacky solution, no idea how to do it properly
-    setTimeout( () => {
+    setTimeout(() => {
       const timeToSearch: Date = new Date(this.selectedTime.getTime() - ((minutesToParse - 1) * 60000));
-      this.strictedPositionService.getFirstOrThirdAlgorithmForSelectedTime(idCowShed, timeToSearch, "thirdAlgorithm").pipe(
-	filter(exists),
-	first()
+      this.strictedPositionService.getFirstOrThirdAlgorithmForSelectedTime(idCowShed, timeToSearch, 'thirdAlgorithm').pipe(
+        filter(exists),
+        first()
       ).subscribe((data) => {
-	this.largeRangeData[minutesToParse - 1] = data;
-	
-	this.chart.data = this.parseSelectedCow(this.selectedCowId, this.largeRangeData, minutesToParse)
+        this.largeRangeData[minutesToParse - 1] = data;
+
+        this.chart.data = this.parseSelectedCow(this.selectedCowId, this.largeRangeData, minutesToParse);
       });
-      
+
       this.drawSensors(this.chart);
-    }, 1000 );
+    }, 1000);
   }
 
   private initChart() {
@@ -182,31 +179,34 @@ export class SelectedCowChartComponent implements OnInit, OnDestroy {
       max: chart.colors.getIndex(0)
     });
 
-    series.tooltip.label.adapter.add("text", function(text, target) {
+    series.tooltip.label.adapter.add('text', (text, target) => {
       if (target.dataItem) {
-	const val: number = target.dataItem.values.value.value;
-	
-	if (val == 0) { return "" }
-	
-	if (val == 2) { return 'Cow seen ' + (val - 1) + ' minute ago' }
+        const val: number = target.dataItem.values.value.value;
 
-	return 'Cow seen ' + (val-1) + ' minutes ago'
+        if (val == 0) {
+          return '';
+        }
+
+        if (val == 2) {
+          return 'Cow seen ' + (val - 1) + ' minute ago';
+        }
+
+        return 'Cow seen ' + (val - 1) + ' minutes ago';
       }
       return text;
     });
 
-    columnTemplate.column.adapter.add("fill", function(fill, target) {
+    columnTemplate.column.adapter.add('fill', (fill, target) => {
       if (target.dataItem) {
-	const val: number = target.dataItem.values.value.value;
+        const val: number = target.dataItem.values.value.value;
 
-	if (val == 0)
-	{
-	  return am4core.color("white")
-	}
-	
-	const change: number = val / 15;
-	const baseColor = am4core.color(chart.colors.getIndex(0)).lighten(-0.5).brighten(-0.5);
-	return baseColor.lighten(change).brighten(change);
+        if (val == 0) {
+          return am4core.color('white');
+        }
+
+        const change: number = val / 15;
+        const baseColor = am4core.color(chart.colors.getIndex(0)).lighten(-0.5).brighten(-0.5);
+        return baseColor.lighten(change).brighten(change);
       }
       return fill;
     });
