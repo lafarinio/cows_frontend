@@ -10,9 +10,6 @@ import { WallpointLocation } from '../../models/WallpointLocation.model';
 
 
 
-const barnWidth = 300;
-const barnHeight = 170;
-
 
 @Component({
   selector: 'cows-work-points-chart',
@@ -44,11 +41,17 @@ export class WorkPointsChartComponent implements OnInit, OnDestroy {
   onDataSelection($event: CowshedDataAtTime) {
     this.selectedBarn = $event.cowshed;
     this.selectedTime = $event.timestamp;
+
+    // this.updateContentHeight();
     this.initializeChart();
     this.initializeData();
     this.initializeSensors();
     this.drawSensors();
     console.log($event);
+  }
+
+  private updateContentHeight() {
+    this.contentHeight = this.contentWidth * (this.selectedBarn.height / this.selectedBarn.width);
   }
 
   private initializeChart() {
@@ -91,7 +94,7 @@ export class WorkPointsChartComponent implements OnInit, OnDestroy {
       const dataItem: any = target.dataItem;
 
       // tslint:disable-next-line:max-line-length
-      const scalers = this.barnToChartScalers(barnWidth, barnHeight, dataItem.dataContext.wallpointWidth, dataItem.dataContext.wallpointHeight);
+      const scalers = this.barnToChartScalers(this.selectedBarn.width, this.selectedBarn.height, dataItem.dataContext.wallpointWidth, dataItem.dataContext.wallpointHeight);
       const scaledHeight = scalers[1] * this.contentHeight;
 
       return scaledHeight;
@@ -101,7 +104,7 @@ export class WorkPointsChartComponent implements OnInit, OnDestroy {
       const dataItem: any = target.dataItem;
 
       // tslint:disable-next-line:max-line-length
-      const scalers = this.barnToChartScalers(barnWidth, barnHeight, dataItem.dataContext.wallpointWidth, dataItem.dataContext.wallpointHeight);
+      const scalers = this.barnToChartScalers(this.selectedBarn.width, this.selectedBarn.height, dataItem.dataContext.wallpointWidth, dataItem.dataContext.wallpointHeight);
       const scaledWidth = scalers[0] * this.contentWidth;
 
       return scaledWidth;
@@ -118,6 +121,7 @@ export class WorkPointsChartComponent implements OnInit, OnDestroy {
     yAxis.renderer.minGridDistance = 50;
     yAxis.min = 0;
     yAxis.max = this.selectedBarn.height;
+    yAxis.renderer.inversed = true;
   }
 
   private drawSensors() {
@@ -127,7 +131,7 @@ export class WorkPointsChartComponent implements OnInit, OnDestroy {
       sensor.valign = 'top';
       sensor.align = 'right';
 
-      const coords = this.barnCoordToChartCoord(barnWidth, barnHeight, this.contentWidth, this.contentHeight, pos.position_x, pos.position_y);
+      const coords = this.barnCoordToChartCoord(this.selectedBarn.width, this.selectedBarn.height, this.contentWidth, this.contentHeight, pos.position_x, pos.position_y);
       sensor.marginRight = coords[0] - (sensor.innerWidth / 4);
       sensor.marginTop = coords[1] - (sensor.innerHeight / 4);
 
