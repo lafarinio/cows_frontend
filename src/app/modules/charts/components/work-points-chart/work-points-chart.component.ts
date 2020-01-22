@@ -78,7 +78,7 @@ export class WorkPointsChartComponent implements OnInit, OnDestroy {
       const series = chart.series.push(new am4charts.LineSeries());
       series.dataFields.valueY = PositionNames.posY;
       series.dataFields.valueX = PositionNames.posX;
-      series.dataFields.value = PositionNames.value;
+      series.dataFields.value = PositionNames.valueInWP;
       series.strokeOpacity = 0;
       series.name = 'Series 1';
 
@@ -103,7 +103,7 @@ export class WorkPointsChartComponent implements OnInit, OnDestroy {
       bullet.adapter.add('pixelHeight', (pixelHeight, target) => {
         const dataItem: any = target.dataItem;
 
-        const scalers = barnToChartScalers(barnWidth, barnHeight, dataItem.dataContext.sensorWidth, dataItem.dataContext.sensorHeight);
+        const scalers = barnToChartScalers(barnWidth, barnHeight, dataItem.dataContext.wallpointWidth, dataItem.dataContext.wallpointHeight);
         const scaledHeight = scalers[1] * contentHeight;
 
         return scaledHeight;
@@ -112,7 +112,7 @@ export class WorkPointsChartComponent implements OnInit, OnDestroy {
       bullet.adapter.add('pixelWidth', (pixelWidth, target) => {
         const dataItem: any = target.dataItem;
 
-        const scalers = barnToChartScalers(barnWidth, barnHeight, dataItem.dataContext.sensorWidth, dataItem.dataContext.sensorHeight);
+        const scalers = barnToChartScalers(barnWidth, barnHeight, dataItem.dataContext.wallpointWidth, dataItem.dataContext.wallpointHeight);
         const scaledWidth = scalers[0] * contentWidth;
 
         return scaledWidth;
@@ -123,37 +123,37 @@ export class WorkPointsChartComponent implements OnInit, OnDestroy {
           // from lower left corner
           posX: 0,
           posY: 10,
-          sensorWidth: 20,
-          sensorHeight: 10,
-          value: 1,
+          wallpointWidth: 20,
+          wallpointHeight: 10,
+          cowsCount: 1,
         },
         {
           posX: 0,
           posY: 20,
-          sensorWidth: 10,
-          sensorHeight: 10,
-          value: 2,
+          wallpointWidth: 10,
+          wallpointHeight: 10,
+          cowsCount: 2,
         },
         {
           posX: 10,
           posY: 20,
-          sensorWidth: 10,
-          sensorHeight: 10,
-          value: 3,
+          wallpointWidth: 10,
+          wallpointHeight: 10,
+          cowsCount: 3,
         },
         {
           posX: 20,
           posY: 20,
-          sensorWidth: 10,
-          sensorHeight: 10,
-          value: 4,
+          wallpointWidth: 10,
+          wallpointHeight: 10,
+          cowsCount: 4,
         },
         {
           posX: 20,
           posY: 10,
-          sensorWidth: 10,
-          sensorHeight: 10,
-          value: 5,
+          wallpointWidth: 10,
+          wallpointHeight: 10,
+          cowsCount: 5,
         }
       ];
 

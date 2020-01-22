@@ -21,5 +21,6 @@ export enum PositionNames {
   posX = 'posX',
   posY = 'posY',
   value = 'numOfCows',
+  valueInWP = 'cowsCount',
   whatCows = 'cows'
 }
