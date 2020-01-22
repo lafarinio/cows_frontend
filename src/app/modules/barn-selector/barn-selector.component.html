@@ -1,5 +1,5 @@
 <div class="content">
   <select (change)="onDropdownChange($event.target.value)">
-    <option *ngFor='let barn of barnData | async; let i = index ' value="{{i}}">Barn {{barn.idCowShed}}</option>
+    <option *ngFor='let barn of barnDataArray; let i = index ' value="{{i}}">Barn {{barn.cowshedId}}</option>
   </select>
 </div>

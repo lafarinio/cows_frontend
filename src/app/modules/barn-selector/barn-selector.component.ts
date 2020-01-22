@@ -1,10 +1,11 @@
 import { Component, EventEmitter, OnInit, Output, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { first } from 'rxjs/operators';
+import { first, map } from 'rxjs/operators';
 import { Deserialize } from 'cerialize';
 
 import { CowshedData, CowshedTimeRange } from '../charts/models/CowshedData.model';
 import { UrlService } from '../../base/services/url.service';
+import { Observable } from "rxjs";
 
 
 @Component({
@@ -17,7 +18,8 @@ export class BarnSelectorComponent implements OnInit, AfterViewInit {
   @Output()
   barnSelectedEventEmitter = new EventEmitter<CowshedData>();
 
-  barnData: any; //Observable<Array<CowshedData>>
+  barnData$: Observable<Array<CowshedData>>;
+  barnDataArray: Array<CowshedData>;
 
   constructor(private urlService: UrlService,
               private http: HttpClient) { }
@@ -26,9 +28,15 @@ export class BarnSelectorComponent implements OnInit, AfterViewInit {
     const path = 'getCowSheds';
     const restUrl = this.urlService.getUrl(path);
 
-    this.barnData = this.http.get(restUrl);
+    this.barnData$ = this.http.get(restUrl).pipe(
+      map((response: Array<any>) => Deserialize(response, CowshedData))
+    );
 
-    this.emitBarnId(0);
+    this.barnData$.subscribe(data => {
+      this.barnDataArray = data;
+      this.emitBarnId(0);
+    });
+
   }
 
   ngAfterViewInit() {
@@ -36,10 +44,8 @@ export class BarnSelectorComponent implements OnInit, AfterViewInit {
 
 
   emitBarnId(id: number) {
-    this.barnData.pipe(first()).subscribe(data => {
-      const selectedBarnData: CowshedData = Deserialize(data[id], CowshedData);
-      this.barnSelectedEventEmitter.emit(selectedBarnData);
-    });
+    console.log(this.barnDataArray[0]);
+    this.barnSelectedEventEmitter.emit(this.barnDataArray[id]);
   }
 
   onDropdownChange(id: number) {
