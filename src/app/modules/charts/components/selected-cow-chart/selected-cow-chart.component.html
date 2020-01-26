@@ -2,13 +2,11 @@
   <div id="chartdiv" style="width: 800px; height: 500px;"></div>
 </div>
 
-<div>
+<div class="content">
   Cow selector:
   <select (change)="onCowSelection($event.target.value)">
     <option *ngFor='let cow of cows; let i = index ' value="{{i}}">Cow {{cow}}</option>
   </select>
 </div>
 
-<br/>
-<br/>
 <cows-time-selector (selectedDataEventEmitter)='onDataSelection($event)'></cows-time-selector>
