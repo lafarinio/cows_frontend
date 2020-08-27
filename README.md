@@ -1,5 +1,11 @@
 # Cows
 
+The aim of the project was to create the application to visualize the distribution of cows in the barn. This application offers two main views: distribution of cows in grid-like view and distributions in the areas within the range of sensors.
+
+This application is the frontend part of the project.
+
+# Documentation
+
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 8.3.14.
 
 Additional tips added by Rafał Kocoń.
