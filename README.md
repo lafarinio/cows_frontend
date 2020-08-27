@@ -1,4 +1,4 @@
-# Cows
+# Cows Distribution -- Frontend Application
 
 The aim of the project was to create the application to visualize the distribution of cows in the barn. This application offers two main views: distribution of cows in grid-like view and distributions in the areas within the range of sensors.
 
